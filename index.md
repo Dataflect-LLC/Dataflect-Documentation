@@ -1,0 +1,1305 @@
+# About Dataflect Search
+
+Dataflect Search is available as a free Splunk application that allows users to easily integrate with third-party APIs directly from the Splunk ecosystem. Dataflect Search provides the following high level capabilities:
+
+### Extend:
+
+- Perform searches, aggregations, and analytics over data returned via API using Splunk's powerful capabilities.
+- Ingest output from any API into Splunk without the need for a developer to create a scripted input.
+- Retrieve remote data and store as a lookup in your Splunk environment.
+
+# Dataflect License
+
+To obtain your free Dataflect Search license, visit us at [dataflect.com](https://dataflect.com) or contact us directly at [sales@dataflect.com](mailto:sales@dataflect.com).
+
+# Disclaimer
+
+Dataflect is in no way associated with Splunk, Inc. or any of its affiliates. Dataflect is a third party developed and maintained Splunk Application.
+
+***
+
+# Installation
+
+Dataflect search can be installed in Splunk Cloud environments and should be installed directly from Splunkbase via self-service install or with the help of Splunk Support.
+
+***
+
+# Dataflect roles
+
+Dataflect uses the standard access control system integrated with the Splunk platform. Dataflect allows for strict Role Based Access Control by restricting functionality and interaction with third party APIs on a per domain basis. 
+
+In order to facilitate this, Dataflect adds three roles to any pre-existing roles within your Splunk deployment:
+
+| Role    |                                                                                                                                                   Description                                                                                                                                                  |
+| :------ | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
+| dfadmin | Installs and configures the Dataflect app within your Splunk deployment. Users must be assigned this role in order to manage Dataflect settings, configure allowed domains, create normalization collections, and manage credentials. Users with this role will have visibility into the Monitoring dashboard. |
+| dfpower |                                                                                                                    Manages data normalizations and is able to view the Monitoring dashboard.                                                                                                                   |
+| dfuser  |                                                                          No inherent permissions, but can by used by Dataflect administrators to provide users the ability to execute queries using Dataflect custom search commands.                                                                          |
+
+***
+
+# Adding users to Dataflect roles
+
+After installation, you must assign at least one user to the _dfadmin_ role. You may assign as many additional users as applicable to the other roles listed above. In order to accomplish this:
+
+1. From the system bar, click **Settings** > **Users**
+2. Search for the user you wish to modify
+3. Next to the desired user, in the **Actions** column, select the dropdown and pick **Edit**
+4. In the pop-up, find the appropriate role next to **Assign roles** under the **Availablle item(s)** column (e.g. dfadmin)
+   1. Click the desired role to add it to **Selected item(s)**
+5. Click **Save**
+
+# Configuring Dataflect
+
+Once a user has been added to the _dfadmin_ role, they will have visibility into the _Settings_ page within the Dataflect application. The settings are broken down by tab into five main areas:
+
+## General Settings
+
+- **Allowed Roles**: With this setting you are able to select the roles that can execute Dataflect search commands. You can further refine these permissions in the **Allowed Domains** setting, but if a role is not selected within this list they will be unable to execute any search that leverages a Dataflect search command.
+- **Enforce Allowed Domains**: If this box is checked, the settings on the **Allowed Domains** tab are strictly enforced. 
+  - **NOTE**: If this box is unchecked users with appropriate permissions can interact with any API regardless of destination. 
+- **Force HTTPS Verify**: If this box is checked, all API calls made with Dataflect search commands will force verification of the server certificate.
+
+## Allowed Domains
+
+The Allowed Domains tab allows an administrator to provide granular permissions to interact with an API. Using this tab you can configure per domain permissions:
+
+- **Domain (FQDN)**: The Fully Qualified Domain Name (FQDN) to which the permissions apply (e.g. api.example.com).
+  - **NOTE**: Permissions apply to the FQDN only, not any sub-domains.
+- **Methods**: The Dataflect search commands users are able to execute with this FQDN.
+- **Roles**: The roles that are able to interact with this FQDN with the selected Methods.
+
+## Proxy Settings
+
+The Proxy Settings tab allows an administrator to enter proxy configuration settings, if applicable. Fields that are not necessary (e.g. Username, Password when proxy authentication is not necessary) can be left blank.
+
+## Data Normalization
+
+On the Data Normalization tab an administrator can create or delete Dataflect Normalization Collections. These collections are used to group together normalizations that can be used when executing the dfsearch or dffetch  search commands. The **Name** should include only letters, numbers, dashes, or periods.
+
+## Credentials
+
+On the Credentials tab an administrator can create API credentials that can be used to authenticate Datflect search commands. When creating credentials you may choose from the following supported types:
+
+- **API Key (simple)**: A simple text based field that you can use to store an API Key. The value of this credential type must be a string.
+- **API Key (headers)**: For more complex use cases, or when additional fields need to be provided (e.g. Credential ID, Credential Value). The value of a credential of this type must be a valid JSON object.
+- **Basic Auth**: When authentication to an API key will be accomplished via username and password.
+
+Credentials are stored securely using Splunk's native Secrets Storage.
+
+.Dataflect's core functionality is made accessible via four primary search commands that ship with the Application.
+
+- **dfsearch**: Flexibly query any API
+- **dffetch**: Flexibly retrieve an external file (or API response) and store as a lookup
+- **dfenrich**: Enrich search results by interacting with any API
+- **dfengage**: Interact with any API using the POST, PUT, or DELETE methods.
+
+# Basic Examples
+
+### dfsearch
+
+```Text SPL
+| dfsearch url="https://uselessfacts.jsph.pl/api/v2/facts/today"
+```
+
+The above example demonstrates basic usage of the dfsearch command, without any additional parameters specified. For additional options, visit [Dataflect Command | dfsearch](doc:dfsearch).
+
+### dffetch
+
+```Text SPL
+| dffetch url="https://raw.githubusercontent.com/datasets/top-level-domain-names/master/top-level-domain-names.csv" 
+containing_field="data" output_file_name="tlds.csv" props=tld_fetch
+```
+
+The above example demonstrates basic usage of the dffetch command. In this example the search reaches out to the specified URL, searches the response for a field called **data** which contains the desired response, and saves the output as a lookup called "tlds.csv". Normalizations are applied to the response via the "tld_fetch" props collection. For additional usage instruction, visit [Dataflect Command | dffetch](doc:dffetch).
+
+### dfenrich
+
+```Text SPL
+index=botsv3 (RecipientAddress=* OR SenderAddress=*) 
+| top 5 SenderAddress 
+| dfenrich url=emailrep.io/$SenderAddress$
+```
+
+The above example demonstrates basic usage of the dfenrich command. This example specifies the URL to reach out to, and passes the SenderAddress field to this API as the endpoint within the URL parameter. all fields contained in the response will be added as context to each event. For additional usage instructions, visit [Dataflect Command | dfenrich](doc:dataflect-command-dfenrich).
+
+### dfengage
+
+```Text SPL
+| dfengage url="localhost:8089/services/authentication/users/johndoe" credential="demo.dataflect.com" 
+headers=<<>> parameters="roles=disabled" verify=0 method=post
+```
+
+The above example demonstrates basic use of the dfengage command. In this example we are interacting with the REST API for the Splunk instance we are operating on. We leverage as saved credential with a name of "demo.dataflect.com" and use the credential in the **headers** parameter. We add the "johndoe" user to the "disabled" role. We choose not to verify the server certificate and we leverage the POST method.
+
+# Description
+
+Provides the ability to flexibly query any API, the response is parsed and returned as Splunk events. Must be the first command in a search string. The **dfsearch** command can only interact with APIs using GET requests. The **dfsearch** command is a Generating Command (<https://docs.splunk.com/Splexicon:Generatingcommand>).
+
+# Syntax
+
+**Simple:**
+
+| dfsearch url="\<_url_>"
+
+**Complete:**
+
+Required syntax is in **bold**.
+
+**| dfsearch**  
+**[url=\<string>]**  
+[endpoint=\<string>]  
+[parameters=\<string>]  
+[credential=\<string>]  
+[containing_field=\<string>]  
+[timestamp_field=\<string>]  
+[timestmp_strf=\<string>]  
+[limit=\<int>]  
+[data=\<string>]  
+[headers=\<string>]  
+[use_proxy=\<bool>]  
+[verify=\<bool>]  
+[rate_limit_calls=\<int>]  
+[rate_limit_period=\<int>]  
+[offset_field=\<string>]  
+[props=\<string>]  
+[ingest=\<bool>]  
+[ingest_index=\<string>]  
+[ingest_sourcetype=\<string>]  
+[include_fields=\<string>]  
+[search_filter=\<string>]  
+[text_line_breaker=\<regex>]
+
+## Required arguments
+
+**url**
+
+- **Syntax:** url="_\<url>_"
+- **Description:** The URL for the API that you are reaching out to. Supports HTTP and HTTPS. If no protocol is specified this will default to HTTPS. You can include the full URL path here, or leverage the **url** and **endpoint** parameters together to specify the full path. 
+  - Examples:
+    - <https://api.dataflect.com/v2/api>
+    - api.dataflect.com/v2/api
+    - api.dataflect.com
+
+## Optional arguments
+
+**endpoint**
+
+- **Syntax:** endpoint="\<string>"
+- **Description:** The API endpoint being targeted, will be appended to the **url** field. Can begin with or without a "/"
+
+**parameters**
+
+- **Syntax:** parameters="\<string>"
+- **Description:**The parameters to pass with the API call. Use the name of the variable and the corresponding value, separated by an =. If multiple parameters apply, separate with "&".
+  - Examples:
+    - foo=bar&something=this is a string&id=23
+  - There is no need to URL Escape the parameters, this is handled by Dataflect.
+
+**credential**
+
+- **Syntax:** credential="\<string>"
+- **Description:** The name of the credential to be used for interacting with the API. Behavior depends on the "Type" of credential this is associated with:
+  - **api_key_headers**: The headers set in the credential are automatically added to your request, no action needed.
+  - **api_key_simple:** Wherever the key needs to be entered, place "\<\<>>". This can be in either the **parameters** or the **headers**.
+    - e.g. parameters="key=\<\<>>"
+    - e.g. headers="{'API-KEY': \<\<>>}"
+  - **basic:**: The user/pass are automatically passed with your request, no action needed.
+
+**containing_field**
+
+- **Syntax:** containing_field="\<string>"
+- **Description:** The field within the API response that contains the information your are interested in viewing. For example, if your API response returns {"data": [{"foo": "bar", "id": "1"},{"foo": "baz", "id": "2"]}, you can specify the **containing_field**=data to return the containing events.
+
+**timestamp_field**
+
+- **Syntax:** timestamp_field="\<string>"
+- **Description:** The field within the API response that contains the timestamp
+
+**timestamp_strf**
+
+- **Syntax:** timestmp_strf="\<string>"
+- **Description:** The stftime format of the timestamp_field (<https://strftime.org/>)
+  - e.g. timestamp_strf="%Y-%m-%dT%H:%M:%S"
+
+**limit**
+
+- **Syntax:** limit="\<int>"
+- **Description:** The maximum amount of results that you want to return. This will take effect if your API call returns results that are paginated. 
+  - - **NOTE**: If the API "limit" parameter is greater than this, you may receive more than this number of results.
+
+**data**
+
+- **Syntax:** data="\<string>"
+- **Description:** The "Body" of the request sent to the API. This must be a JSON-like object, using single quotes in place of double quotes.
+  - e.g. data="{'foo': 'bar'}"
+
+**headers**
+
+- **Syntax:** headers="\<string>"
+- **Description:** The "Header" of the request sent to the API. This must be a JSON-like object, using single quotes in place of double quotes.
+  - e.g. headers="{'foo': 'bar'}"
+
+**use_proxy**
+
+- **Syntax:** use_proxy="\<boolean>"
+- **Description:** Whether or not to pass the request through the proxy that has been configured in [Configure Dataflect Settings](doc:settings). Boolean values are accepted, 1 or 0.
+
+**verify**
+
+- **Syntax:** verify="\<boolean>"
+- **Description:** Whether or not to verify the server certificate with the request. **NOTE:** If Dataflect settings have set "Force HTTPS Verify" to true this setting will be ignored.
+
+**rate_limit_calls**
+
+- **Syntax:** rate_limit_calls="\<int>"
+- **Description:** Used in conjunction with **rate_limit_period**. If your API response requires pagination, you can implement rate limiting for subsequent calls required to return the full data set. The number set here will dictate the number of calls that can be made within the **rate_limit_period**.
+
+**rate_limit_period**
+
+- **Syntax:** rate_limit_period="\<int>"
+- **Description:** Used in conjunction with **rate_limit_calls**. If your API response requires pagination, you can implement rate limiting for subsequent calls required to return the full data set. The number set here will dictate the number of seconds within which the **rate_limit_period** number of calls can be made.
+  - e.g. rate_limit_calls=15 rate_limit_period=60
+    - 15 calls per 60 seconds, after this limit is reached Dataflect will wait to make subsequent calls.
+
+**offset_field**
+
+- **Syntax:** offset_field="\<string>"
+- **Description:** The offset field used by the destination API when making calls that require pagination. This will be "offset" by default but can be configured if an API uses a non-standard field.
+
+**props**
+
+- **Syntax:** props="\<string>"
+- **Description:** The Dataflect Normalization collection that will be used to normalize the API response fields.
+
+**ingest**
+
+- **Syntax:** ingest="\<boolean>"
+- **Description:** Tells Dataflect whether to ingest the response from the API in addition to returning as search results. Accepts boolean values 1 or 0.
+
+**ingest_index**
+
+- **Syntax:** ingest_index="\<string>"
+- **Description:** Used in conjunction with **ingest**. Tells Dataflect what index to send events to, defaults to "main".
+
+**ingest_sourcetype**
+
+- **Syntax:** ingest_sourcetype="\<string>"
+- **Description:** Used in conjunction with **ingest**. Tells Dataflect what sourcetype to associate with ingested events, defaults to "stash".
+
+**include_fields**
+
+- **Syntax:** include_fields="\<string>"
+- **Description:** A comma separated list of field names to include in the events returned from your API call. **NOTE**: This filtering occurs after normalization from the **props** setting. This means that if you change a field name with **props** you should specify the new name in this list.
+  - e.g.  include_fields=""
+
+**search_filter**
+
+- **Syntax:** search_filter="\<string>"
+- **Description:** Provides the ability to filter out results from the API response before returning them as events. Accepts a comma separated list of criteria with the following comparisons: =, >, >=, \<, \<=. Filters are combined using AND logic. **NOTE**: This filtering occurs after normalization from the **props** setting. This means that if you change a field name with **props** you should specify the new name in this list.
+  - e.g. price>1,currency=USD
+    - Evaluated as price greater than 1 AND currency equals USD.
+
+**text_line_breaker**
+
+- **Syntax:** text_line_breaker="\<regex>"
+- **Description:** When the response returned from the API is a large text object, this parameter can be used to break the text into individual events. A capturing group must be defined, this is where the event will be broken. The capturing group may be empty.
+  - e.g. text_line_breaker="}(){"
+    - This would cause:
+      - {"\_raw":"foo"}{"\_raw":"bar"}
+    - To be returned as two events:
+      - {"\_raw":"foo"}
+      - {"\_raw":"bar"}
+
+# Description
+
+Flexibly retrieve an external file (or API response) and store as a lookup. The **dffetch** command can only interact with APIs using GET requests. The dffetch command is a Generating Command (<https://docs.splunk.com/Splexicon:Generatingcommand>).
+
+# Usage
+
+# Syntax
+
+**Simple:**
+
+| dffetch url="\<_url_>"
+
+**Complete:**
+
+Required syntax is in **bold**.
+
+**| dffetch**  
+**[url=\<string>]**  
+[endpoint=\<string>]  
+[parameters=\<string>]  
+[credential=\<string>]  
+[containing_field=\<string>]  
+[headers=\<string>]  
+[use_proxy=\<bool>]  
+[verify=\<bool>]  
+[props=\<string>]  
+[include_fields=\<string>]  
+[output_file_name=\<string>]  
+[output_app=\<string>]  
+[csv_field_names=\<string>]  
+[text_headers=\<string>]  
+[text_regex=\<string>]  
+[text_ignore_lines=\<string>]  
+[is_zip=\<boolean>]  
+[zip_inner_file=\<string>]
+
+## Required arguments
+
+**url**
+
+- **Syntax:** url="_\<url>_"
+- **Description:** The URL for the API that you are reaching out to. Supports HTTP and HTTPS. If no protocol is specified this will default to HTTPS. You can include the full URL path here, or leverage the **url** and **endpoint** parameters together to specify the full path. 
+  - Examples:
+    - <https://api.dataflect.com/v2/api>
+    - api.dataflect.com/v2/api
+    - api.dataflect.com
+
+## Optional arguments
+
+**endpoint**
+
+- **Syntax:** endpoint="\<string>"
+- **Description:** The API endpoint being targeted, will be appended to the **url** field. Can begin with or without a "/"
+
+**parameters**
+
+- **Syntax:** parameters="\<string>"
+- **Description:**The parameters to pass with the API call. Use the name of the variable and the corresponding value, separated by an =. If multiple parameters apply, separate with "&".
+  - Examples:
+    - foo=bar&something=this is a string&id=23
+  - There is no need to URL Escape the parameters, this is handled by Dataflect.
+
+**credential**
+
+- **Syntax:** credential="\<string>"
+- **Description:** The name of the credential to be used for interacting with the API. Behavior depends on the "Type" of credential this is associated with:
+  - **api_key_headers**: The headers set in the credential are automatically added to your request, no action needed.
+  - **api_key_simple:** Wherever the key needs to be entered, place "\<\<>>". This can be in either the **parameters** or the **headers**.
+    - e.g. parameters="key=\<\<>>"
+    - e.g. headers="{'API-KEY': \<\<>>}"
+  - **basic:**: The user/pass are automatically passed with your request, no action needed.
+
+**containing_field**
+
+- **Syntax:** containing_field="\<string>"
+- **Description:** The field within the API response that contains the information your are interested in viewing. For example, if your API response returns {"data": [{"foo": "bar", "id": "1"},{"foo": "baz", "id": "2"]}, you can specify the **containing_field**=data to return the containing events.
+
+**headers**
+
+- **Syntax:** headers="\<string>"
+- **Description:** The "Header" of the request sent to the API. This must be a JSON-like object, using single quotes in place of double quotes.
+  - e.g. headers="{'foo': 'bar'}"
+
+**use_proxy**
+
+- **Syntax:** use_proxy="\<boolean>"
+- **Description:** Whether or not to pass the request through the proxy that has been configured in [Configure Dataflect Settings](doc:settings). Boolean values are accepted, 1 or 0.
+
+**verify**
+
+- **Syntax:** verify="\<boolean>"
+- **Description:** Whether or not to verify the server certificate with the request. **NOTE:** If Dataflect settings have set "Force HTTPS Verify" to true this setting will be ignored.
+
+**props**
+
+- **Syntax:** props="\<string>"
+- **Description:** The Dataflect Normalization collection that will be used to normalize the API response fields.
+
+**include_fields**
+
+- **Syntax:** include_fields="\<string>"
+- **Description:** A comma separated list of field names to include in the events returned from your API call. **NOTE**: This filtering occurs after normalization from the **props** setting. This means that if you change a field name with **props** you should specify the new name in this list.
+  - e.g.  include_fields=""
+
+**output_file_name**
+
+- **Syntax:** output_file_name="\<string>"
+- **Description:** The lookup file name that you will be creating as a result of your search. Recommend appending with the extension ".csv", but this is not required. The lookup will be a CSV Lookup (<https://docs.splunk.com/Documentation/Splunk/latest/Knowledge/ConfigureCSVlookups>).
+
+**output_app**
+
+- **Syntax:** output_app="\<string>"
+- **Description:** The app that you will be storing the lookup within. Defaults to "dataflect". 
+
+**csv_field_names**
+
+- **Syntax:** csv_field_names="\<string>"
+- **Description:** If the file you are retrieving is a CSV file, you can use this parameter to set the field names for the CSV file. If the CSV contains a header row this is not necessary. This should be a comma separated list of field names.
+  - e.g. csv_field_names="id,name,description"
+
+**text_headers**
+
+- **Syntax:** text_headers="\<string>"
+- **Description:** If the file you are retrieving is a text file, you can use this parameter to set the field names for the text file. This should be a comma separated list of field names.
+  - e.g. text_headers="id,name,description"
+
+**text_regex**
+
+- **Syntax:** text_regex="\<string>"
+- **Description:** Used in conjunction with **text_headers**. If the file you are retrieving is a text file, you can use this parameter to define how the different field values are delineated within each line of the file. The value of this parameter must be a regex expression that extracts each field value on every line. The number of capturing groups should match the number of **text_headers** configured.
+  - e.g. text_regex="^(\\S+)\\s(\\S+)\\s(\\S+)$"
+    - The first capturing group will be assigned to a field name equal to the first text_header identified in **text_headers**, the second group will be assigned to the second text_header, the third group will be assigned to the third text_header.
+
+**text_ignore_lines**
+
+- **Syntax:** text_ignore_lines="\<string>"
+- **Description:** Used in conjunction with **text_headers**. If the file you are retrieving is a text file, you can use this parameter to ignore lines that begin with the value entered here. For example, if the text file you are retrieving contains comments at the top of the document, you can ignore these lines with the example below. Interpreted as a string literal, regex is not accepted.
+  - e.g. text_ignore_lines="#"
+
+**is_zip**
+
+- **Syntax:** is_zip="\<boolean>"
+- **Description:** Used to indicate if the file being retrieved is a compressed zip file. Accepts boolean values 1 or 0. Defaults to 0.
+
+**zip_inner_file**
+
+- **Syntax:** zip_inner_file="\<string>"
+- **Description:** Used in conjunction with **is_zip**. If **is_zip** is set to 1 than this must be set to the file you wish to return from within the zip file.
+
+# Description
+
+Enrich search results by interacting with any API. The **dfenrich** command can only interact with APIs using GET or POST requests. The **dfenrich** command is a Centralized Streaming Command (<https://docs.splunk.com/Documentation/Splunk/latest/Search/Typesofcommands>).
+
+# Syntax
+
+**Simple:**
+
+| dfenrich url="\<_url_>"
+
+**Complete:**
+
+Required syntax is in **bold**.
+
+**| dfenrich**  
+**[url=\<string>]**  
+[endpoint=\<string>]  
+[parameters=\<string>]  
+[credential=\<string>]  
+[containing_field=\<string>]  
+[data=\<string>]  
+[data_format=\<string>]  
+[headers=\<string>]  
+[use_proxy=\<bool>]  
+[verify=\<bool>]  
+[rate_limit_calls=\<int>]  
+[rate_limit_period=\<int>]
+
+## Required arguments
+
+**url**
+
+- **Syntax:** url="_\<url>_"
+- **Description:** The URL for the API that you are reaching out to. Supports HTTP and HTTPS. If no protocol is specified this will default to HTTPS. You can include the full URL path here, or leverage the **url** and **endpoint** parameters together to specify the full path. **This field accepts parameters passed from search results in the form of $\<field_name>$.**
+  - Examples:
+    - <https://api.dataflect.com/v2/api>
+    - api.dataflect.com/v2/api
+    - api.dataflect.com
+
+## Optional arguments
+
+**endpoint**
+
+- **Syntax:** endpoint="\<string>"
+- **Description:** The API endpoint being targeted, will be appended to the **url** field. Can begin with or without a "/". **This field accepts parameters passed from search results in the form of $\<field_name>$.**
+
+**parameters**
+
+- **Syntax:** parameters="\<string>"
+- **Description:**The parameters to pass with the API call. Use the name of the variable and the corresponding value, separated by an =. If multiple parameters apply, separate with "&". **This field accepts parameters passed from search results in the form of $\<field_name>$.**
+  - Examples:
+    - foo=bar&something=this is a string&id=23
+  - There is no need to URL Escape the parameters, this is handled by Dataflect.
+
+**credential**
+
+- **Syntax:** credential="\<string>"
+- **Description:** The name of the credential to be used for interacting with the API. Behavior depends on the "Type" of credential this is associated with:
+  - **api_key_headers**: The headers set in the credential are automatically added to your request, no action needed.
+  - **api_key_simple:** Wherever the key needs to be entered, place "\<\<>>". This can be in either the **parameters** or the **headers**.
+    - e.g. parameters="key=\<\<>>"
+    - e.g. headers="{'API-KEY': \<\<>>}"
+  - **basic:**: The user/pass are automatically passed with your request, no action needed.
+
+**containing_field**
+
+- **Syntax:** containing_field="\<string>"
+- **Description:** The field within the API response that contains the information your are interested in viewing. For example, if your API response returns {"data": [{"foo": "bar", "id": "1"},{"foo": "baz", "id": "2"]}, you can specify the **containing_field**=data to return the containing events.
+
+**data**
+
+- **Syntax:** data="\<string>"
+- **Description:** The "Body" of the request sent to the API. This must be a JSON-like object, using single quotes in place of double quotes. **This field accepts parameters passed from search results in the form of $\<field_name>$.**
+  - e.g. data="{'foo': 'bar'}"
+
+**data_format**
+
+- **Syntax:** data_format="\<string>"
+- **Description:** Accepts the values "json", "raw", or "serialized". 
+  - **json:** Pass a JSON object and set Content-Type header to application/json.
+  - **raw**: Send raw data
+  - **serialized**: Data is serialized prior to sending  
+    The value defaults to "json" which is adequate for most use cases. For advanced usage and support please reach out to [support@dataflect.com](mailto:support@dataflect.com).
+
+**headers**
+
+- **Syntax:** headers="\<string>"
+- **Description:** The "Header" of the request sent to the API. This must be a JSON-like object, using single quotes in place of double quotes.
+  - e.g. headers="{'foo': 'bar'}"
+
+**use_proxy**
+
+- **Syntax:** use_proxy="\<boolean>"
+- **Description:** Whether or not to pass the request through the proxy that has been configured in [Configure Dataflect Settings](doc:settings). Boolean values are accepted, 1 or 0.
+
+**verify**
+
+- **Syntax:** verify="\<boolean>"
+- **Description:** Whether or not to verify the server certificate with the request. **NOTE:** If Dataflect settings have set "Force HTTPS Verify" to true this setting will be ignored.
+
+**rate_limit_calls**
+
+- **Syntax:** rate_limit_calls="\<int>"
+- **Description:** Used in conjunction with **rate_limit_period**. If your API response requires pagination, you can implement rate limiting for subsequent calls required to return the full data set. The number set here will dictate the number of calls that can be made within the **rate_limit_period**.
+
+**rate_limit_period**
+
+- **Syntax:** rate_limit_period="\<int>"
+- **Description:** Used in conjunction with **rate_limit_calls**. If your API response requires pagination, you can implement rate limiting for subsequent calls required to return the full data set. The number set here will dictate the number of seconds within which the **rate_limit_period** number of calls can be made.
+  - e.g. rate_limit_calls=15 rate_limit_period=60
+    - 15 calls per 60 seconds, after this limit is reached Dataflect will wait to make subsequent calls.
+
+# Description
+
+Enrich search results by interacting with any API. The **dfenrich** command can only interact with APIs using GET or POST requests. The **dfenrich** command is a Centralized Streaming Command (<https://docs.splunk.com/Documentation/Splunk/latest/Search/Typesofcommands>).
+
+# Syntax
+
+**Simple:**
+
+| dfenrich url="\<_url_>"
+
+**Complete:**
+
+Required syntax is in **bold**.
+
+**| dfenrich**  
+**[url=\<string>]**  
+[endpoint=\<string>]  
+[parameters=\<string>]  
+[credential=\<string>]  
+[containing_field=\<string>]  
+[data=\<string>]  
+[data_format=\<string>]  
+[headers=\<string>]  
+[use_proxy=\<bool>]  
+[verify=\<bool>]  
+[rate_limit_calls=\<int>]  
+[rate_limit_period=\<int>]
+
+## Required arguments
+
+**url**
+
+- **Syntax:** url="_\<url>_"
+- **Description:** The URL for the API that you are reaching out to. Supports HTTP and HTTPS. If no protocol is specified this will default to HTTPS. You can include the full URL path here, or leverage the **url** and **endpoint** parameters together to specify the full path. **This field accepts parameters passed from search results in the form of $\<field_name>$.**
+  - Examples:
+    - <https://api.dataflect.com/v2/api>
+    - api.dataflect.com/v2/api
+    - api.dataflect.com
+
+## Optional arguments
+
+**endpoint**
+
+- **Syntax:** endpoint="\<string>"
+- **Description:** The API endpoint being targeted, will be appended to the **url** field. Can begin with or without a "/". **This field accepts parameters passed from search results in the form of $\<field_name>$.**
+
+**parameters**
+
+- **Syntax:** parameters="\<string>"
+- **Description:**The parameters to pass with the API call. Use the name of the variable and the corresponding value, separated by an =. If multiple parameters apply, separate with "&". **This field accepts parameters passed from search results in the form of $\<field_name>$.**
+  - Examples:
+    - foo=bar&something=this is a string&id=23
+  - There is no need to URL Escape the parameters, this is handled by Dataflect.
+
+**credential**
+
+- **Syntax:** credential="\<string>"
+- **Description:** The name of the credential to be used for interacting with the API. Behavior depends on the "Type" of credential this is associated with:
+  - **api_key_headers**: The headers set in the credential are automatically added to your request, no action needed.
+  - **api_key_simple:** Wherever the key needs to be entered, place "\<\<>>". This can be in either the **parameters** or the **headers**.
+    - e.g. parameters="key=\<\<>>"
+    - e.g. headers="{'API-KEY': \<\<>>}"
+  - **basic:**: The user/pass are automatically passed with your request, no action needed.
+
+**containing_field**
+
+- **Syntax:** containing_field="\<string>"
+- **Description:** The field within the API response that contains the information your are interested in viewing. For example, if your API response returns {"data": [{"foo": "bar", "id": "1"},{"foo": "baz", "id": "2"]}, you can specify the **containing_field**=data to return the containing events.
+
+**data**
+
+- **Syntax:** data="\<string>"
+- **Description:** The "Body" of the request sent to the API. This must be a JSON-like object, using single quotes in place of double quotes. **This field accepts parameters passed from search results in the form of $\<field_name>$.**
+  - e.g. data="{'foo': 'bar'}"
+
+**data_format**
+
+- **Syntax:** data_format="\<string>"
+- **Description:** Accepts the values "json", "raw", or "serialized". 
+  - **json:** Pass a JSON object and set Content-Type header to application/json.
+  - **raw**: Send raw data
+  - **serialized**: Data is serialized prior to sending  
+    The value defaults to "json" which is adequate for most use cases. For advanced usage and support please reach out to [support@dataflect.com](mailto:support@dataflect.com).
+
+**headers**
+
+- **Syntax:** headers="\<string>"
+- **Description:** The "Header" of the request sent to the API. This must be a JSON-like object, using single quotes in place of double quotes.
+  - e.g. headers="{'foo': 'bar'}"
+
+**use_proxy**
+
+- **Syntax:** use_proxy="\<boolean>"
+- **Description:** Whether or not to pass the request through the proxy that has been configured in [Configure Dataflect Settings](doc:settings). Boolean values are accepted, 1 or 0.
+
+**verify**
+
+- **Syntax:** verify="\<boolean>"
+- **Description:** Whether or not to verify the server certificate with the request. **NOTE:** If Dataflect settings have set "Force HTTPS Verify" to true this setting will be ignored.
+
+**rate_limit_calls**
+
+- **Syntax:** rate_limit_calls="\<int>"
+- **Description:** Used in conjunction with **rate_limit_period**. If your API response requires pagination, you can implement rate limiting for subsequent calls required to return the full data set. The number set here will dictate the number of calls that can be made within the **rate_limit_period**.
+
+**rate_limit_period**
+
+- **Syntax:** rate_limit_period="\<int>"
+- **Description:** Used in conjunction with **rate_limit_calls**. If your API response requires pagination, you can implement rate limiting for subsequent calls required to return the full data set. The number set here will dictate the number of seconds within which the **rate_limit_period** number of calls can be made.
+  - e.g. rate_limit_calls=15 rate_limit_period=60
+    - 15 calls per 60 seconds, after this limit is reached Dataflect will wait to make subsequent calls.
+
+# Description
+
+Send search results individually to any API. The **dfpush** command can interact with APIs using POST, or PUT requests. The **dfpush** command is a Streaming Command (<https://docs.splunk.com/Documentation/Splunk/latest/Search/Typesofcommands>). This command may result in large execution times for large datasets.
+
+# Syntax
+
+**Simple:**
+
+| dfpush url="\<_url_>" method="POST" parameters="$\_raw$"
+
+**Complete:**
+
+Required syntax is in **bold**.
+
+**| dfpush**  
+**[url=\<string>]**  
+[endpoint=\<string>]  
+[parameters=\<string>]  
+[credential=\<string>]  
+[data=\<string>]  
+[data_format=\<string>]  
+[headers=\<string>]  
+[use_proxy=\<bool>]  
+[verify=\<bool>]  
+[rate_limit_calls=\<int>]  
+[rate_limit_period=\<int>]  
+[method=\<string>]  
+[include_fields=\<string>]  
+[payload_field=\<string>]
+
+## Required arguments
+
+**url**
+
+- **Syntax:** url="_\<url>_"
+- **Description:** The URL for the API that you are reaching out to. Supports HTTP and HTTPS. If no protocol is specified this will default to HTTPS. You can include the full URL path here, or leverage the **url** and **endpoint** parameters together to specify the full path. 
+  - Examples:
+    - <https://api.dataflect.com/v2/api>
+    - api.dataflect.com/v2/api
+    - api.dataflect.com
+
+## Optional arguments
+
+**endpoint**
+
+- **Syntax:** endpoint="\<string>"
+- **Description:** The API endpoint being targeted, will be appended to the **url** field. Can begin with or without a "/". \*\*
+
+**parameters**
+
+- **Syntax:** parameters="\<string>"
+- **Description:**The parameters to pass with the API call. Use the name of the variable and the corresponding value, separated by an =. If multiple parameters apply, separate with "&". 
+  - Examples:
+    - foo=bar&something=this is a string&id=23
+  - There is no need to URL Escape the parameters, this is handled by Dataflect.
+
+**credential**
+
+- **Syntax:** credential="\<string>"
+- **Description:** The name of the credential to be used for interacting with the API. Behavior depends on the "Type" of credential this is associated with:
+  - **api_key_headers**: The headers set in the credential are automatically added to your request, no action needed.
+  - **api_key_simple:** Wherever the key needs to be entered, place "\<\<>>". This can be in either the **parameters** or the **headers**.
+    - e.g. parameters="key=\<\<>>"
+    - e.g. headers="{'API-KEY': \<\<>>}"
+  - **basic:**: The user/pass are automatically passed with your request, no action needed.
+
+**data**
+
+- **Syntax:** data="\<string>"
+- **Description:** The "Body" of the request sent to the API. This must be a JSON-like object, using single quotes in place of double quotes.
+  - e.g. data="{'foo': 'bar'}"
+
+**data_format**
+
+- **Syntax:** data_format="\<string>"
+- **Description:** Accepts the values "json", "raw", or "serialized". 
+  - **json:** Pass a JSON object and set Content-Type header to application/json.
+  - **raw**: Send raw data
+  - **serialized**: Data is serialized prior to sending  
+    The value defaults to "json" which is adequate for most use cases. For advanced usage and support please reach out to [support@dataflect.com](mailto:support@dataflect.com).
+
+**headers**
+
+- **Syntax:** headers="\<string>"
+- **Description:** The "Header" of the request sent to the API. This must be a JSON-like object, using single quotes in place of double quotes.
+  - e.g. headers="{'foo': 'bar'}"
+
+**use_proxy**
+
+- **Syntax:** use_proxy="\<boolean>"
+- **Description:** Whether or not to pass the request through the proxy that has been configured in [Configure Dataflect Settings](doc:settings). Boolean values are accepted, 1 or 0.
+
+**verify**
+
+- **Syntax:** verify="\<boolean>"
+- **Description:** Whether or not to verify the server certificate with the request. **NOTE:** If Dataflect settings have set "Force HTTPS Verify" to true this setting will be ignored.
+
+**rate_limit_calls**
+
+- **Syntax:** rate_limit_calls="\<int>"
+- **Description:** Used in conjunction with **rate_limit_period**. The number set here will dictate the number of calls that can be made within the **rate_limit_period**.
+
+**rate_limit_period**
+
+- **Syntax:** rate_limit_period="\<int>"
+- **Description:** Used in conjunction with **rate_limit_calls**. The number set here will dictate the number of seconds within which the **rate_limit_period** number of calls can be made.
+  - e.g. rate_limit_calls=15 rate_limit_period=60
+    - 15 calls per 60 seconds, after this limit is reached Dataflect will wait to make subsequent calls.
+
+**method**
+
+- **Sytax:** method=\"<string>"
+- **Description:**The HTTP Request Method for each API call. The dfpush command accepts only the POST and PUT methods.
+
+**include_fields**
+
+- **Syntax:** include_fields="\<string>"
+- **Description:** Used in conjunction with **payload_field** (Both must be used together). This will determine which fields from each event to include in the payload
+  - e.g. include_fields="\_raw,index,host" payload_field="document"
+    - Send the \_raw, index, and host fields from each event. Put these into a JSON dictionary and add this dictionary to the "document" key within the data payload.
+  - Defaults to including only the \_raw field if not set.
+
+**payload_field**
+
+- **Syntax:** payload_field="\<string>"
+- **Description:** This will determine which key in the payload dictionary to pass the payload through.
+  - e.g. include_fields="\_raw,index,host" payload_field="document"
+    - Send the \_raw, index, and host fields from each event. Put these into a JSON dictionary and add this dictionary to the "document" key within the data payload.
+  - Defaults to sending the payload as body of the request. Will overwrite anything else set in the data parameter if unset.
+
+# Description
+
+Send search results individually to any API. The **dfpush** command can interact with APIs using POST, or PUT requests. The **dfpush** command is a Streaming Command (<https://docs.splunk.com/Documentation/Splunk/latest/Search/Typesofcommands>). This command may result in large execution times for large datasets.
+
+# Syntax
+
+**Simple:**
+
+| dfpush url="\<_url_>" method="POST" parameters="$\_raw$"
+
+**Complete:**
+
+Required syntax is in **bold**.
+
+**| dfpush**  
+**[url=\<string>]**  
+[endpoint=\<string>]  
+[parameters=\<string>]  
+[credential=\<string>]  
+[data=\<string>]  
+[data_format=\<string>]  
+[headers=\<string>]  
+[use_proxy=\<bool>]  
+[verify=\<bool>]  
+[rate_limit_calls=\<int>]  
+[rate_limit_period=\<int>]  
+[method=\<string>]  
+[include_fields=\<string>]  
+[payload_field=\<string>]  
+[batch_size=\<int>]
+
+## Required arguments
+
+**url**
+
+- **Syntax:** url="_\<url>_"
+- **Description:** The URL for the API that you are reaching out to. Supports HTTP and HTTPS. If no protocol is specified this will default to HTTPS. You can include the full URL path here, or leverage the **url** and **endpoint** parameters together to specify the full path. 
+  - Examples:
+    - <https://api.dataflect.com/v2/api>
+    - api.dataflect.com/v2/api
+    - api.dataflect.com
+
+**payload_field**
+
+- **Syntax:** payload_field="\<string>"
+- **Description:** Used in conjunction with **include_fields** (which defaults to \_raw). This will determine which key in the payload dictionary to pass the payload through.
+  - e.g. include_fields="\_raw,index,host" payload_field="document"
+    - Send the \_raw, index, and host fields from each event. Put these into a JSON dictionary and add this dictionary along with all other events in this batch to the "document" key as a list within the data payload. The receiving API should be expecting a list in this field.
+
+**batch_size**
+
+- **Syntax:** batch_size="\<int>"
+- **Description:** The maximum number of events to include in each batch. Please note that because the dfbatch command is a chunked command there is a high probability for large data sets that individual batch sizes will be less than the value entered here, this is expected behavior.
+
+## Optional arguments
+
+**endpoint**
+
+- **Syntax:** endpoint="\<string>"
+- **Description:** The API endpoint being targeted, will be appended to the **url** field. Can begin with or without a "/". \*\*
+
+**parameters**
+
+- **Syntax:** parameters="\<string>"
+- **Description:**The parameters to pass with the API call. Use the name of the variable and the corresponding value, separated by an =. If multiple parameters apply, separate with "&". 
+  - Examples:
+    - foo=bar&something=this is a string&id=23
+  - There is no need to URL Escape the parameters, this is handled by Dataflect.
+
+**credential**
+
+- **Syntax:** credential="\<string>"
+- **Description:** The name of the credential to be used for interacting with the API. Behavior depends on the "Type" of credential this is associated with:
+  - **api_key_headers**: The headers set in the credential are automatically added to your request, no action needed.
+  - **api_key_simple:** Wherever the key needs to be entered, place "\<\<>>". This can be in either the **parameters** or the **headers**.
+    - e.g. parameters="key=\<\<>>"
+    - e.g. headers="{'API-KEY': \<\<>>}"
+  - **basic:**: The user/pass are automatically passed with your request, no action needed.
+
+**data**
+
+- **Syntax:** data="\<string>"
+- **Description:** The "Body" of the request sent to the API. This must be a JSON-like object, using single quotes in place of double quotes.
+  - e.g. data="{'foo': 'bar'}"
+
+**data_format**
+
+- **Syntax:** data_format="\<string>"
+- **Description:** Accepts the values "json", "raw", or "serialized". 
+  - **json:** Pass a JSON object and set Content-Type header to application/json.
+  - **raw**: Send raw data
+  - **serialized**: Data is serialized prior to sending  
+    The value defaults to "json" which is adequate for most use cases. For advanced usage and support please reach out to [support@dataflect.com](mailto:support@dataflect.com).
+
+**headers**
+
+- **Syntax:** headers="\<string>"
+- **Description:** The "Header" of the request sent to the API. This must be a JSON-like object, using single quotes in place of double quotes.
+  - e.g. headers="{'foo': 'bar'}"
+
+**use_proxy**
+
+- **Syntax:** use_proxy="\<boolean>"
+- **Description:** Whether or not to pass the request through the proxy that has been configured in [Configure Dataflect Settings](doc:settings). Boolean values are accepted, 1 or 0.
+
+**verify**
+
+- **Syntax:** verify="\<boolean>"
+- **Description:** Whether or not to verify the server certificate with the request. **NOTE:** If Dataflect settings have set "Force HTTPS Verify" to true this setting will be ignored.
+
+**rate_limit_calls**
+
+- **Syntax:** rate_limit_calls="\<int>"
+- **Description:** Used in conjunction with **rate_limit_period**. The number set here will dictate the number of calls that can be made within the **rate_limit_period**.
+
+**rate_limit_period**
+
+- **Syntax:** rate_limit_period="\<int>"
+- **Description:** Used in conjunction with **rate_limit_calls**. The number set here will dictate the number of seconds within which the **rate_limit_period** number of calls can be made.
+  - e.g. rate_limit_calls=15 rate_limit_period=60
+    - 15 calls per 60 seconds, after this limit is reached Dataflect will wait to make subsequent calls.
+
+**method**
+
+- **Sytax:** method=\"<string>"
+- **Description:**The HTTP Request Method for each API call. The dfpush command accepts only the POST and PUT methods.
+
+**include_fields**
+
+- **Syntax:** include_fields="\<string>"
+- **Description:** Used in conjunction with **payload_field** (Both must be used together). This will determine which fields from each event to include in the payload
+  - e.g. include_fields="\_raw,index,host" payload_field="document"
+    - Send the \_raw, index, and host fields from each event. Put these into a JSON dictionary and add this dictionary to the "document" key within the data payload.
+  - Defaults to including only the \_raw field if not set.
+
+# Description
+
+Send search results individually to any API. The **dfpush** command can interact with APIs using POST, or PUT requests. The **dfpush** command is a Streaming Command (<https://docs.splunk.com/Documentation/Splunk/latest/Search/Typesofcommands>). This command may result in large execution times for large datasets.
+
+# Syntax
+
+**Simple:**
+
+| dfpush url="\<_url_>" method="POST" parameters="$\_raw$"
+
+**Complete:**
+
+Required syntax is in **bold**.
+
+**| dfpush**  
+**[url=\<string>]**  
+[endpoint=\<string>]  
+[parameters=\<string>]  
+[credential=\<string>]  
+[data=\<string>]  
+[data_format=\<string>]  
+[headers=\<string>]  
+[use_proxy=\<bool>]  
+[verify=\<bool>]  
+[rate_limit_calls=\<int>]  
+[rate_limit_period=\<int>]  
+[method=\<string>]  
+[include_fields=\<string>]  
+[payload_field=\<string>]  
+[batch_size=\<int>]
+
+## Required arguments
+
+**url**
+
+- **Syntax:** url="_\<url>_"
+- **Description:** The URL for the API that you are reaching out to. Supports HTTP and HTTPS. If no protocol is specified this will default to HTTPS. You can include the full URL path here, or leverage the **url** and **endpoint** parameters together to specify the full path. 
+  - Examples:
+    - <https://api.dataflect.com/v2/api>
+    - api.dataflect.com/v2/api
+    - api.dataflect.com
+
+**payload_field**
+
+- **Syntax:** payload_field="\<string>"
+- **Description:** Used in conjunction with **include_fields** (which defaults to \_raw). This will determine which key in the payload dictionary to pass the payload through.
+  - e.g. include_fields="\_raw,index,host" payload_field="document"
+    - Send the \_raw, index, and host fields from each event. Put these into a JSON dictionary and add this dictionary along with all other events in this batch to the "document" key as a list within the data payload. The receiving API should be expecting a list in this field.
+
+**batch_size**
+
+- **Syntax:** batch_size="\<int>"
+- **Description:** The maximum number of events to include in each batch. Please note that because the dfbatch command is a chunked command there is a high probability for large data sets that individual batch sizes will be less than the value entered here, this is expected behavior.
+
+## Optional arguments
+
+**endpoint**
+
+- **Syntax:** endpoint="\<string>"
+- **Description:** The API endpoint being targeted, will be appended to the **url** field. Can begin with or without a "/". \*\*
+
+**parameters**
+
+- **Syntax:** parameters="\<string>"
+- **Description:**The parameters to pass with the API call. Use the name of the variable and the corresponding value, separated by an =. If multiple parameters apply, separate with "&". 
+  - Examples:
+    - foo=bar&something=this is a string&id=23
+  - There is no need to URL Escape the parameters, this is handled by Dataflect.
+
+**credential**
+
+- **Syntax:** credential="\<string>"
+- **Description:** The name of the credential to be used for interacting with the API. Behavior depends on the "Type" of credential this is associated with:
+  - **api_key_headers**: The headers set in the credential are automatically added to your request, no action needed.
+  - **api_key_simple:** Wherever the key needs to be entered, place "\<\<>>". This can be in either the **parameters** or the **headers**.
+    - e.g. parameters="key=\<\<>>"
+    - e.g. headers="{'API-KEY': \<\<>>}"
+  - **basic:**: The user/pass are automatically passed with your request, no action needed.
+
+**data**
+
+- **Syntax:** data="\<string>"
+- **Description:** The "Body" of the request sent to the API. This must be a JSON-like object, using single quotes in place of double quotes.
+  - e.g. data="{'foo': 'bar'}"
+
+**data_format**
+
+- **Syntax:** data_format="\<string>"
+- **Description:** Accepts the values "json", "raw", or "serialized". 
+  - **json:** Pass a JSON object and set Content-Type header to application/json.
+  - **raw**: Send raw data
+  - **serialized**: Data is serialized prior to sending  
+    The value defaults to "json" which is adequate for most use cases. For advanced usage and support please reach out to [support@dataflect.com](mailto:support@dataflect.com).
+
+**headers**
+
+- **Syntax:** headers="\<string>"
+- **Description:** The "Header" of the request sent to the API. This must be a JSON-like object, using single quotes in place of double quotes.
+  - e.g. headers="{'foo': 'bar'}"
+
+**use_proxy**
+
+- **Syntax:** use_proxy="\<boolean>"
+- **Description:** Whether or not to pass the request through the proxy that has been configured in [Configure Dataflect Settings](doc:settings). Boolean values are accepted, 1 or 0.
+
+**verify**
+
+- **Syntax:** verify="\<boolean>"
+- **Description:** Whether or not to verify the server certificate with the request. **NOTE:** If Dataflect settings have set "Force HTTPS Verify" to true this setting will be ignored.
+
+**rate_limit_calls**
+
+- **Syntax:** rate_limit_calls="\<int>"
+- **Description:** Used in conjunction with **rate_limit_period**. The number set here will dictate the number of calls that can be made within the **rate_limit_period**.
+
+**rate_limit_period**
+
+- **Syntax:** rate_limit_period="\<int>"
+- **Description:** Used in conjunction with **rate_limit_calls**. The number set here will dictate the number of seconds within which the **rate_limit_period** number of calls can be made.
+  - e.g. rate_limit_calls=15 rate_limit_period=60
+    - 15 calls per 60 seconds, after this limit is reached Dataflect will wait to make subsequent calls.
+
+**method**
+
+- **Sytax:** method=\"<string>"
+- **Description:**The HTTP Request Method for each API call. The dfpush command accepts only the POST and PUT methods.
+
+**include_fields**
+
+- **Syntax:** include_fields="\<string>"
+- **Description:** Used in conjunction with **payload_field** (Both must be used together). This will determine which fields from each event to include in the payload
+  - e.g. include_fields="\_raw,index,host" payload_field="document"
+    - Send the \_raw, index, and host fields from each event. Put these into a JSON dictionary and add this dictionary to the "document" key within the data payload.
+  - Defaults to including only the \_raw field if not set.
+
+# Description
+
+Send search results individually to any API. The **dfpush** command can interact with APIs using POST, or PUT requests. The **dfpush** command is a Streaming Command (<https://docs.splunk.com/Documentation/Splunk/latest/Search/Typesofcommands>). This command may result in large execution times for large datasets.
+
+# Syntax
+
+**Simple:**
+
+| dfpush url="\<_url_>" method="POST" parameters="$\_raw$"
+
+**Complete:**
+
+Required syntax is in **bold**.
+
+**| dfpush**  
+**[url=\<string>]**  
+[endpoint=\<string>]  
+[parameters=\<string>]  
+[credential=\<string>]  
+[data=\<string>]  
+[data_format=\<string>]  
+[headers=\<string>]  
+[use_proxy=\<bool>]  
+[verify=\<bool>]  
+[rate_limit_calls=\<int>]  
+[rate_limit_period=\<int>]  
+[method=\<string>]  
+[include_fields=\<string>]  
+[payload_field=\<string>]  
+[batch_size=\<int>]
+
+## Required arguments
+
+**url**
+
+- **Syntax:** url="_\<url>_"
+- **Description:** The URL for the API that you are reaching out to. Supports HTTP and HTTPS. If no protocol is specified this will default to HTTPS. You can include the full URL path here, or leverage the **url** and **endpoint** parameters together to specify the full path. 
+  - Examples:
+    - <https://api.dataflect.com/v2/api>
+    - api.dataflect.com/v2/api
+    - api.dataflect.com
+
+**payload_field**
+
+- **Syntax:** payload_field="\<string>"
+- **Description:** Used in conjunction with **include_fields** (which defaults to \_raw). This will determine which key in the payload dictionary to pass the payload through.
+  - e.g. include_fields="\_raw,index,host" payload_field="document"
+    - Send the \_raw, index, and host fields from each event. Put these into a JSON dictionary and add this dictionary along with all other events in this batch to the "document" key as a list within the data payload. The receiving API should be expecting a list in this field.
+
+**batch_size**
+
+- **Syntax:** batch_size="\<int>"
+- **Description:** The maximum number of events to include in each batch. Please note that because the dfbatch command is a chunked command there is a high probability for large data sets that individual batch sizes will be less than the value entered here, this is expected behavior.
+
+## Optional arguments
+
+**endpoint**
+
+- **Syntax:** endpoint="\<string>"
+- **Description:** The API endpoint being targeted, will be appended to the **url** field. Can begin with or without a "/". \*\*
+
+**parameters**
+
+- **Syntax:** parameters="\<string>"
+- **Description:**The parameters to pass with the API call. Use the name of the variable and the corresponding value, separated by an =. If multiple parameters apply, separate with "&". 
+  - Examples:
+    - foo=bar&something=this is a string&id=23
+  - There is no need to URL Escape the parameters, this is handled by Dataflect.
+
+**credential**
+
+- **Syntax:** credential="\<string>"
+- **Description:** The name of the credential to be used for interacting with the API. Behavior depends on the "Type" of credential this is associated with:
+  - **api_key_headers**: The headers set in the credential are automatically added to your request, no action needed.
+  - **api_key_simple:** Wherever the key needs to be entered, place "\<\<>>". This can be in either the **parameters** or the **headers**.
+    - e.g. parameters="key=\<\<>>"
+    - e.g. headers="{'API-KEY': \<\<>>}"
+  - **basic:**: The user/pass are automatically passed with your request, no action needed.
+
+**data**
+
+- **Syntax:** data="\<string>"
+- **Description:** The "Body" of the request sent to the API. This must be a JSON-like object, using single quotes in place of double quotes.
+  - e.g. data="{'foo': 'bar'}"
+
+**data_format**
+
+- **Syntax:** data_format="\<string>"
+- **Description:** Accepts the values "json", "raw", or "serialized". 
+  - **json:** Pass a JSON object and set Content-Type header to application/json.
+  - **raw**: Send raw data
+  - **serialized**: Data is serialized prior to sending  
+    The value defaults to "json" which is adequate for most use cases. For advanced usage and support please reach out to [support@dataflect.com](mailto:support@dataflect.com).
+
+**headers**
+
+- **Syntax:** headers="\<string>"
+- **Description:** The "Header" of the request sent to the API. This must be a JSON-like object, using single quotes in place of double quotes.
+  - e.g. headers="{'foo': 'bar'}"
+
+**use_proxy**
+
+- **Syntax:** use_proxy="\<boolean>"
+- **Description:** Whether or not to pass the request through the proxy that has been configured in [Configure Dataflect Settings](doc:settings). Boolean values are accepted, 1 or 0.
+
+**verify**
+
+- **Syntax:** verify="\<boolean>"
+- **Description:** Whether or not to verify the server certificate with the request. **NOTE:** If Dataflect settings have set "Force HTTPS Verify" to true this setting will be ignored.
+
+**rate_limit_calls**
+
+- **Syntax:** rate_limit_calls="\<int>"
+- **Description:** Used in conjunction with **rate_limit_period**. The number set here will dictate the number of calls that can be made within the **rate_limit_period**.
+
+**rate_limit_period**
+
+- **Syntax:** rate_limit_period="\<int>"
+- **Description:** Used in conjunction with **rate_limit_calls**. The number set here will dictate the number of seconds within which the **rate_limit_period** number of calls can be made.
+  - e.g. rate_limit_calls=15 rate_limit_period=60
+    - 15 calls per 60 seconds, after this limit is reached Dataflect will wait to make subsequent calls.
+
+**method**
+
+- **Sytax:** method=\"<string>"
+- **Description:**The HTTP Request Method for each API call. The dfpush command accepts only the POST and PUT methods.
+
+**include_fields**
+
+- **Syntax:** include_fields="\<string>"
+- **Description:** Used in conjunction with **payload_field** (Both must be used together). This will determine which fields from each event to include in the payload
+  - e.g. include_fields="\_raw,index,host" payload_field="document"
+    - Send the \_raw, index, and host fields from each event. Put these into a JSON dictionary and add this dictionary to the "document" key within the data payload.
+  - Defaults to including only the \_raw field if not set.
+
+# Overview
+
+Dataflect ships with an **Action Builder** view that makes it easy for users to interact with the **dfengage** command. Users can access the **Action Builder** dashboard by navigating to the Dataflect Application and selecting **Action Builder** from the **Create** drop-down.  For specific details regarding the options present on the page please visit [Dataflect Command | dfengage](doc:dataflect-command-dfengage).
+
+# Using the Action Builder to Create a Custom Alert Action
+
+Once a user has executed an action using the **Action Builder**, the option to "Create Custom Alert Action" appears at the top of the page. Click the link to expand this option.
+
+The expanded section includes the underlying query that has been executed. From here a user can enter an "Alert Action Name" in the text box under the search and click "Create" to create a custom alert action that will execute the underlying search.
+
+Users have the option to enter parameters within the search query using the format $result.\<field_name>$. If parameters are used, when the custom alert action is executed, it will receive the value from the event that triggered the alert.
+
+Example:
+
+[block:image]
+{
+  "images": [
+    {
+      "image": [
+        "https://files.readme.io/94bfca9-Screenshot_2023-08-15_at_5.01.17_PM.png",
+        "",
+        ""
+      ],
+      "align": "center"
+    }
+  ]
+}
+[/block]
+
+
+The Alert Action is created:
+
+[block:image]
+{
+  "images": [
+    {
+      "image": [
+        "https://files.readme.io/7f666fa-Screenshot_2023-08-15_at_5.06.27_PM.png",
+        "",
+        ""
+      ],
+      "align": "center"
+    }
+  ]
+}
+[/block]
+
+
+Update permissions as necessary. Now you may use this alert action when creating new alerts. The results must contain the parameter that was created in the Action Builder or they will fail. 
+
+Here's an example using the created Alert Action to disable a user after 2 failed logins:
+
+
+# Overview
+
+Each of the Dataflect commands are logged to Splunk's \_internal index. These logs can be found by searching:
+
+```Text SPL
+index=_internal sourcetype=dataflect:log
+```
+
+Dataflect logs the user executing each command, as well as information regarding which APIs they are communicating with, the number of calls they are making, and the volume of data that is being sent out of Splunk (egress) and returned back to Splunk (ingress).
+
+# Monitoring Dashboard
+
+To simplify monitoring, Dataflect provides a **Monitoring** Dashboard which provides some key metrics. To access the **Monitoring** Dashboard, navigate to the Dataflect Application, and select **Monitoring** from the navigation menu.
+
+From within the dashboard you can filter based on time, command (i.e. dfsearch, dffetch, dfenrich, dfengage), and/or the domain being communicated with.
+
+The following modifiers can be used with any Dataflect custom search command:
+
+- Enter current UTC timestamp:
+  - insert $STRF:<strf time format>:STRF$
+    - <https://strftime.org/>
+  - | dfsearch url=<https://example.dataflect.com> credential=dataflect_example headers="{'User-Agent': 'dataflect-demo', 'Accept': '_/\_', 'x-ms-version': '2020-04-08', 'x-ms-date': '$STRF:%a, %d %b %Y %H:%M:%S GMT:STRF$', 'accept-encoding': 'gzip, deflate'}"
+
+- When executing a dfsearch command, you cannot pass the results directly into the "anomalydetection" or "outlier" commands. You must first pass the results through the "stats" command. Example:
+  - This will not work:
+    - | dfsearch url="<https://api.coincap.io/v2/assets"> containing_field="data"  
+      | anomalydetection changePercent24Hr
+  - This will work:
+    - | dfsearch url="<https://api.coincap.io/v2/assets"> containing_field="data"  
+      | stats count by symbol changePercent24Hr  
+      | anomalydetection changePercent24Hr
