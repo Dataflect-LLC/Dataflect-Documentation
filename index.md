@@ -8,9 +8,10 @@ Dataflect Search is available as a free Splunk application that allows users to 
 - Ingest output from any API into Splunk without the need for a developer to create a scripted input.
 - Retrieve remote data and store as a lookup in your Splunk environment.
 
-# Dataflect License
+# Dataflect Search License
 
-To obtain your free Dataflect Search license, visit us at [dataflect.com](https://dataflect.com) or contact us directly at [sales@dataflect.com](mailto:sales@dataflect.com).
+To obtain your free Dataflect Search license contact us directly at [sales@dataflect.com](mailto:sales@dataflect.com).
+The free Dataflect Search license is limited to 150 searches 
 
 # Disclaimer
 
