@@ -1,3 +1,5 @@
+This documentation is for Dataflect Search version 2.0.0. For older versions of Dataflect Search documentation contact us at [support@dataflect.com][mailto:support@dataflect.com].
+
 # Table of Contents
 
 1. [About Dataflect Search](#about-dataflect-search)
