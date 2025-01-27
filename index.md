@@ -69,7 +69,7 @@ Once a user has been added to the _dfadmin_ role, they will have visibility into
 
 ## Enforce verification?
 
-- Default Behavior: By default, verify is set to True unless configured otherwise in a search (e.g. | dfsearch url=api.dataflect.com/api/v2/endpoint verify=false). This means that when you make an HTTPS request, requests will automatically verify the server’s SSL certificate against a set of trusted Certificate Authorities (CAs).
+- Default Behavior: By default, verify is set to True unless configured otherwise in a search (e.g. \| dfsearch url=api.dataflect.com/api/v2/endpoint verify=false). This means that when you make an HTTPS request, requests will automatically verify the server’s SSL certificate against a set of trusted Certificate Authorities (CAs).
 - What Verification Entails:
    - Certificate Validation: Ensures that the server’s SSL certificate is valid, not expired, and has been issued by a trusted CA.
    - Hostname Matching: Confirms that the certificate’s hostname matches the server’s hostname you’re trying to reach.
