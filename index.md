@@ -156,9 +156,7 @@ Dataflect Search's core functionality is made accessible primarily via a custom 
 
 ## Basic Examples
 
-```Text SPL
-| dfsearch url="https://uselessfacts.jsph.pl/api/v2/facts/today"
-```
+```| dfsearch url="https://uselessfacts.jsph.pl/api/v2/facts/today"```
 
 The above example demonstrates basic usage of the dfsearch command, without any additional parameters specified.
 
@@ -363,9 +361,7 @@ Update permissions as necessary by navigating to Dataflect Search --> Configure 
 
 Each of the Dataflect commands are logged to Splunk's \_internal index. These logs can be found by searching:
 
-```Text SPL
-index=_internal sourcetype=dataflect:log
-```
+```index=_internal sourcetype=dataflect:log```
 
 Dataflect logs the user executing each command, as well as information regarding which APIs they are communicating with, the number of calls they are making, and the volume of data that is being sent out of Splunk (egress) and returned back to Splunk (ingress).
 
