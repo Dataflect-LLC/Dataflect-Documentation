@@ -28,7 +28,7 @@ This documentation is for Dataflect Search version 2.0.0. For older versions of 
 13. [Dataflect Search Modifiers](#dataflect-search-modifiers)
 14. [Dataflect Search Known Issues](#dataflect-search-known-issues)
 
-# About Dataflect Search [Back to Top of Page](#table-of-contents)
+# About Dataflect Search <a href="#" style="font-size: 1em; text-decoration: none; color: inherit;">Go to Top</a>
 
 Dataflect Search is available as a free Splunk application that allows users to easily integrate with third-party APIs directly from the Splunk ecosystem. The free license currently allows for 150 searches per month. If you would like to purchase additional license you can do so by contacting [sales@dataflect.com][mailto:sales@dataflect.com].
 
@@ -40,16 +40,16 @@ Dataflect Search provides the following high level capabilities:
 - Ingest output from any API into Splunk without the need for a developer to create a scripted input.
 - Retrieve remote data and store as a lookup in your Splunk environment.
 
-# Dataflect Search License [Back to Top of Page](#table-of-contents)
+# Dataflect Search License <a href="#" style="font-size: 1em; text-decoration: none; color: inherit;">Go to Top</a>
 
 To obtain your free Dataflect Search license contact us directly at [sales@dataflect.com](mailto:sales@dataflect.com).
 The free Dataflect Search license is limited to 150 searches 
 
-# Dataflect Search Support [Back to Top of Page](#table-of-contents)
+# Dataflect Search Support <a href="#" style="font-size: 1em; text-decoration: none; color: inherit;">Go to Top</a>
 
 Dataflect Search with a free license is a developer supported Splunkbase application. If you encounter issues using the application please contact [support@dataflect.com][mailto:support@dataflect.com] for assistance.
 
-# Disclaimer [Back to Top of Page](#table-of-contents)
+# Disclaimer <a href="#" style="font-size: 1em; text-decoration: none; color: inherit;">Go to Top</a>
 
 Dataflect Search is in no way associated with Splunk, Inc. or any of its affiliates. Dataflect Search is a third party developed and maintained Splunk Application.
 
@@ -62,13 +62,13 @@ You may not modify, distribute, sublicense, or sell this program or derivative w
 
 ***
 
-# Installation [Back to Top of Page](#table-of-contents)
+# Installation <a href="#" style="font-size: 1em; text-decoration: none; color: inherit;">Go to Top</a>
 
 Dataflect Search can be installed in Splunk Cloud environments and should be installed directly from Splunkbase via self-service install or with the help of Splunk Support.
 
 ***
 
-# Dataflect Search Roles [Back to Top of Page](#table-of-contents)
+# Dataflect Search Roles <a href="#" style="font-size: 1em; text-decoration: none; color: inherit;">Go to Top</a>
 
 Dataflect Search uses the standard access control system integrated with the Splunk platform. Dataflect allows for strict Role Based Access Control by restricting functionality and interaction with third party APIs on a per domain basis. 
 
@@ -93,7 +93,7 @@ After installation, you must assign at least one user to the _dfadmin_ role. You
    1. Click the desired role to add it to **Selected item(s)**
 5. Click **Save**
 
-# Configuring Dataflect Settings [Back to Top of Page](#table-of-contents)
+# Configuring Dataflect Settings <a href="#" style="font-size: 1em; text-decoration: none; color: inherit;">Go to Top</a>
 
 Once a user has been added to the _dfadmin_ role, they will have visibility into the _Settings_ page (Configure --> Settings) within the Dataflect application. The settings that can be configured are:
 
@@ -115,7 +115,7 @@ The Allowed Domains list allows an administrator to provide granular permissions
   - **NOTE**: Permissions apply to the FQDN only, not any sub-domains.
 - When this is set to true, requests made to FQDNs not in list will fail to execute. When this is set to false users can make requests to any FQDN.
 
-# Configuring Dataflect Credentials [Back to Top of Page](#table-of-contents)
+# Configuring Dataflect Credentials <a href="#" style="font-size: 1em; text-decoration: none; color: inherit;">Go to Top</a>
 
 On the _Credentials_ page (Configure --> Credentials) an administrator can create API credentials that can be used to authenticate Datflect search commands. When creating credentials you may choose from the following supported types:
 
@@ -126,7 +126,7 @@ On the _Credentials_ page (Configure --> Credentials) an administrator can creat
 
 Credentials are stored securely using Splunk's native Secrets Storage.
 
-# Using Dataflect Search [Back to Top of Page](#table-of-contents)
+# Using Dataflect Search <a href="#" style="font-size: 1em; text-decoration: none; color: inherit;">Go to Top</a>
 
 Dataflect Search's core functionality is made accessible primarily via a custom search command that ship with the Application.
 
@@ -321,7 +321,7 @@ Enter
 **timeout**
 
 
-# Dataflect Search Query Builder Overview [Back to Top of Page](#table-of-contents)
+# Dataflect Search Query Builder Overview <a href="#" style="font-size: 1em; text-decoration: none; color: inherit;">Go to Top</a>
 
 Dataflect Search ships with a **Query Builder** view that makes it easy for users to interact with the **dfsearch** command. Users can access the **Query Builder** dashboard by navigating to the Dataflect Search Application and selecting **Query Builder**.  The same options are available which are discussed in this documentation for the dfsearch command.
 
@@ -335,7 +335,7 @@ Users have the option to enter parameters within the search query using the form
 
 Update permissions as necessary by navigating to Dataflect Search --> Configure --> Commands
 
-# Dataflect Search Logging Overview [Back to Top of Page](#table-of-contents)
+# Dataflect Search Logging Overview <a href="#" style="font-size: 1em; text-decoration: none; color: inherit;">Go to Top</a>
 
 Each of the Dataflect commands are logged to Splunk's \_internal index. These logs can be found by searching:
 
@@ -343,7 +343,7 @@ Each of the Dataflect commands are logged to Splunk's \_internal index. These lo
 
 Dataflect logs the user executing each command, as well as information regarding which APIs they are communicating with, the number of calls they are making, and the volume of data that is being sent out of Splunk (egress) and returned back to Splunk (ingress).
 
-# Dataflect Search Monitoring Dashboard [Back to Top of Page](#table-of-contents)
+# Dataflect Search Monitoring Dashboard <a href="#" style="font-size: 1em; text-decoration: none; color: inherit;">Go to Top</a>
 
 To simplify monitoring, Dataflect provides a **Monitoring** Dashboard which provides some key metrics. To access the **Monitoring** Dashboard, navigate to the Dataflect Application, and select **Monitoring** from the navigation menu.
 
@@ -351,14 +351,14 @@ From within the dashboard you can filter based on time, command and/or the domai
 
 The following modifiers can be used with any Dataflect custom search command:
 
-# Dataflect Search Modifiers [Back to Top of Page](#table-of-contents)
+# Dataflect Search Modifiers <a href="#" style="font-size: 1em; text-decoration: none; color: inherit;">Go to Top</a>
 
 - Enter current UTC timestamp:
   - insert $STRF:<strf time format>:STRF$
     - <https://strftime.org/>
   - | dfsearch url=<https://example.dataflect.com> credential=dataflect_example headers="{'User-Agent': 'dataflect-demo', 'Accept': '_/\_', 'x-ms-version': '2020-04-08', 'x-ms-date': '$STRF:%a, %d %b %Y %H:%M:%S GMT:STRF$', 'accept-encoding': 'gzip, deflate'}"
 
-# Dataflect Search Known Issues [Back to Top of Page](#table-of-contents)
+# Dataflect Search Known Issues <a href="#" style="font-size: 1em; text-decoration: none; color: inherit;">Go to Top</a>
 
 - When executing a dfsearch command, you cannot pass the results directly into the "anomalydetection" or "outlier" commands. You must first pass the results through the "stats" command. Example:
   - This will not work:
