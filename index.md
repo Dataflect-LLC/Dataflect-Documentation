@@ -186,7 +186,8 @@ Required syntax is in **bold**.
 **containing_field**
 
 - **Syntax:** containing_field="\<string>"
-- **Description:** The field within the API response that contains the information your are interested in viewing. For example, if your API response returns {"data": [{"foo": "bar", "id": "1"},{"foo": "baz", "id": "2"]}, you can specify the **containing_field**=data to return the containing events.
+- **Description:** The field within the API response that contains the information your are interested in viewing. For example, if your API response returns {"events": [{"foo": "bar", "id": "1"},{"foo": "baz", "id": "2"]}, you can specify the **containing_field**=events to return the containing events.
+- **Default:** Defaults to "data". You can override this by setting containing_field="none".
 
 **timestamp_field**
 
