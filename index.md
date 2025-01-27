@@ -53,6 +53,7 @@ The free Dataflect Search license is limited to 150 searches
 Dataflect Search with a free license is a developer supported Splunkbase application. If you encounter issues using the application please contact [support@dataflect.com](mailto:support@dataflect.com) for assistance.
 
 # Disclaimer
+[Go to Top](#)
 
 Dataflect Search is in no way associated with Splunk, Inc. or any of its affiliates. Dataflect Search is a third party developed and maintained Splunk Application.
 
