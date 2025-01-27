@@ -38,7 +38,7 @@ Dataflect Search can be installed in Splunk Cloud environments and should be ins
 
 ***
 
-# Dataflect roles
+# Dataflect Search Roles
 
 Dataflect Search uses the standard access control system integrated with the Splunk platform. Dataflect allows for strict Role Based Access Control by restricting functionality and interaction with third party APIs on a per domain basis. 
 
@@ -52,7 +52,7 @@ In order to facilitate this, Dataflect adds three roles to any pre-existing role
 
 ***
 
-# Adding users to Dataflect roles
+## Adding users to Dataflect roles
 
 After installation, you must assign at least one user to the _dfadmin_ role. You may assign as many additional users as applicable to the other roles listed above. In order to accomplish this:
 
@@ -96,13 +96,13 @@ On the _Credentials_ page (Configure --> Credentials) an administrator can creat
 
 Credentials are stored securely using Splunk's native Secrets Storage.
 
-Dataflect Search's core functionality is made accessible via a custom search commands that ship with the Application.
+# Using Dataflect Search
+
+Dataflect Search's core functionality is made accessible primarily via a custom search command that ship with the Application.
 
 - **dfsearch**: Flexibly query any API
 
-# Basic Examples
-
-### dfsearch
+## Basic Examples
 
 ```Text SPL
 | dfsearch url="https://uselessfacts.jsph.pl/api/v2/facts/today"
@@ -110,7 +110,7 @@ Dataflect Search's core functionality is made accessible via a custom search com
 
 The above example demonstrates basic usage of the dfsearch command, without any additional parameters specified.
 
-# Syntax
+## Syntax
 
 **Simple:**
 
@@ -297,7 +297,7 @@ Enter
 
 Dataflect Search ships with a **Query Builder** view that makes it easy for users to interact with the **dfsearch** command. Users can access the **Query Builder** dashboard by navigating to the Dataflect Search Application and selecting **Query Builder**.  The same options are available which are discussed in this documentation for the dfsearch command.
 
-# Using the Query Builder to Create a Custom Search Command
+## Using the Query Builder to Create a Custom Search Command
 
 Once a user has executed a search using the **Query Builder**, the option to "Create Custom Search Command" appears at the top of the page. Click the link to expand this option.
 
@@ -307,7 +307,7 @@ Users have the option to enter parameters within the search query using the form
 
 Update permissions as necessary by navigating to Dataflect Search --> Configure --> Commands
 
-# Dataflect Search Logging Overview
+### Dataflect Search Logging Overview
 
 Each of the Dataflect commands are logged to Splunk's \_internal index. These logs can be found by searching:
 
@@ -317,24 +317,28 @@ index=_internal sourcetype=dataflect:log
 
 Dataflect logs the user executing each command, as well as information regarding which APIs they are communicating with, the number of calls they are making, and the volume of data that is being sent out of Splunk (egress) and returned back to Splunk (ingress).
 
-# Dataflect Search Monitoring Dashboard
+## Dataflect Search Monitoring Dashboard
 
 To simplify monitoring, Dataflect provides a **Monitoring** Dashboard which provides some key metrics. To access the **Monitoring** Dashboard, navigate to the Dataflect Application, and select **Monitoring** from the navigation menu.
 
-From within the dashboard you can filter based on time, command (i.e. dfsearch, dffetch, dfenrich, dfengage), and/or the domain being communicated with.
+From within the dashboard you can filter based on time, command and/or the domain being communicated with.
 
 The following modifiers can be used with any Dataflect custom search command:
+
+# Dataflect Search Modifiers
 
 - Enter current UTC timestamp:
   - insert $STRF:<strf time format>:STRF$
     - <https://strftime.org/>
   - | dfsearch url=<https://example.dataflect.com> credential=dataflect_example headers="{'User-Agent': 'dataflect-demo', 'Accept': '_/\_', 'x-ms-version': '2020-04-08', 'x-ms-date': '$STRF:%a, %d %b %Y %H:%M:%S GMT:STRF$', 'accept-encoding': 'gzip, deflate'}"
 
+# Dataflect Search Known Issues
+
 - When executing a dfsearch command, you cannot pass the results directly into the "anomalydetection" or "outlier" commands. You must first pass the results through the "stats" command. Example:
   - This will not work:
-    - | dfsearch url="<https://api.coincap.io/v2/assets"> containing_field="data"  
+    - | dfsearch url="<https://api.coincap.io/v2/assets">
       | anomalydetection changePercent24Hr
   - This will work:
-    - | dfsearch url="<https://api.coincap.io/v2/assets"> containing_field="data"  
+    - | dfsearch url="<https://api.coincap.io/v2/assets"> 
       | stats count by symbol changePercent24Hr  
       | anomalydetection changePercent24Hr
