@@ -1,8 +1,10 @@
 # About Dataflect Search
 
-Dataflect Search is available as a free Splunk application that allows users to easily integrate with third-party APIs directly from the Splunk ecosystem. Dataflect Search provides the following high level capabilities:
+Dataflect Search is available as a free Splunk application that allows users to easily integrate with third-party APIs directly from the Splunk ecosystem. The free license currently allows for 150 searches per month. If you would like to purchase additional license you can do so by contacting [sales@dataflect.com][mailto:sales@dataflect.com].
 
-### Extend:
+There are additional capabilities available with a premium version of Dataflect that allows for no-code enrichment of your logs in Splunk, and no-code splunk alert alert actions that interact with 3rd party APIs. If you are interested in a demo of these capabilities contact [sales@dataflect.com][mailto:sales@dataflect.com].
+
+Dataflect Search provides the following high level capabilities:
 
 - Perform searches, aggregations, and analytics over data returned via API using Splunk's powerful capabilities.
 - Ingest output from any API into Splunk without the need for a developer to create a scripted input.
@@ -13,9 +15,20 @@ Dataflect Search is available as a free Splunk application that allows users to 
 To obtain your free Dataflect Search license contact us directly at [sales@dataflect.com](mailto:sales@dataflect.com).
 The free Dataflect Search license is limited to 150 searches 
 
+# Dataflect Search Support
+
+Dataflect Search with a free license is a developer supported Splunkbase application. If you encounter issues using the application please contact [support@dataflect.com][mailto:support@dataflect.com] for assistance.
+
 # Disclaimer
 
 Dataflect Search is in no way associated with Splunk, Inc. or any of its affiliates. Dataflect Search is a third party developed and maintained Splunk Application.
+
+Dataflect Search
+Copyright (C) 2025 Dataflect LLC All Rights Reserved.
+
+This software is provided by the copyright holder "as is" and any express or implied warranties, including, but not limited to, the implied warranties of merchantability and fitness for a particular purpose are disclaimed. In no event shall the copyright owner be liable for any direct, indirect, incidental, special, exemplary, or consequential damages (including, but not limited to, procurement of substitute goods or services; loss of use, data, or profits; or business interruption) however caused and on any theory of liability, whether in contract, strict liability, or tort (including negligence or otherwise) arising in any way out of the use of this software, even if advised of the possibility of such damage.
+
+You may not modify, distribute, sublicense, or sell this program or derivative works based upon it. The user is not allowed to distribute the software and must use it only for personal, non-commercial purposes. Use for any other purpose is expressly forbidden, and may result in severe civil and criminal penalties.
 
 ***
 
@@ -33,8 +46,8 @@ In order to facilitate this, Dataflect adds three roles to any pre-existing role
 
 | Role    |                                                                                                                                                   Description                                                                                                                                                  |
 | :------ | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
-| dfadmin | Installs and configures the Dataflect app within your Splunk deployment. Users must be assigned this role in order to manage Dataflect settings, configure allowed domains, create normalization collections, and manage credentials. Users with this role will have visibility into the Monitoring dashboard. |
-| dfpower | Is able to create custom dataflect search commands and is able to view the Monitoring dashboard. |
+| dfadmin | Installs and configures the Dataflect app within your Splunk deployment. Users must be assigned this role in order to manage Dataflect settings, configure allowed domains, and manage custom commands created with Dataflect Search. Users with this role will have visibility into the Monitoring dashboard. |
+| dfpower | Is able to create custom dataflect search commands and is able to view the Monitoring dashboard (user will also require visibility into the _internal index for this dashboard to function properly) |
 | dfuser  | Can execute the dfsearch command. |
 
 ***
@@ -95,7 +108,7 @@ Dataflect Search's core functionality is made accessible via a custom search com
 | dfsearch url="https://uselessfacts.jsph.pl/api/v2/facts/today"
 ```
 
-The above example demonstrates basic usage of the dfsearch command, without any additional parameters specified. For additional options, visit [Dataflect Command | dfsearch](doc:dfsearch).
+The above example demonstrates basic usage of the dfsearch command, without any additional parameters specified.
 
 # Syntax
 
@@ -116,20 +129,23 @@ Required syntax is in **bold**.
 [timestamp_field=\<string>]  
 [timestmp_strf=\<string>]  
 [limit=\<int>]  
-[data=\<string>]  
+[data=\<string>]
+[data_format=\<string>]
 [headers=\<string>]  
-[use_proxy=\<bool>]  
 [verify=\<bool>]  
 [rate_limit_calls=\<int>]  
 [rate_limit_period=\<int>]  
-[offset_field=\<string>]  
-[props=\<string>]  
+[offset_field=\<string>]
+[text_line_breaker=\<string>]
+[text_line_ignore=\<string>]
+[text_line_headers=\<string>]
 [ingest=\<bool>]  
 [ingest_index=\<string>]  
 [ingest_sourcetype=\<string>]  
 [include_fields=\<string>]  
 [search_filter=\<string>]  
-[text_line_breaker=\<regex>]
+[convert_table_array=\<bool>]
+[timeout=\<int>]
 
 ## Required arguments
 
@@ -194,17 +210,16 @@ Required syntax is in **bold**.
 - **Syntax:** data="\<string>"
 - **Description:** The "Body" of the request sent to the API. This must be a JSON-like object, using single quotes in place of double quotes.
   - e.g. data="{'foo': 'bar'}"
+ 
+**data_format**
+
+Enter
 
 **headers**
 
 - **Syntax:** headers="\<string>"
 - **Description:** The "Header" of the request sent to the API. This must be a JSON-like object, using single quotes in place of double quotes.
   - e.g. headers="{'foo': 'bar'}"
-
-**use_proxy**
-
-- **Syntax:** use_proxy="\<boolean>"
-- **Description:** Whether or not to pass the request through the proxy that has been configured in [Configure Dataflect Settings](doc:settings). Boolean values are accepted, 1 or 0.
 
 **verify**
 
@@ -227,6 +242,21 @@ Required syntax is in **bold**.
 
 - **Syntax:** offset_field="\<string>"
 - **Description:** The offset field used by the destination API when making calls that require pagination. This will be "offset" by default but can be configured if an API uses a non-standard field.
+
+**text_line_breaker**
+
+- **Syntax:** text_line_breaker="\<regex>"
+- **Description:** When the response returned from the API is a large text object, this parameter can be used to break the text into individual events. A capturing group must be defined, this is where the event will be broken. The capturing group may be empty.
+  - e.g. text_line_breaker="}(){"
+    - This would cause:
+      - {"\_raw":"foo"}{"\_raw":"bar"}
+    - To be returned as two events:
+      - {"\_raw":"foo"}
+      - {"\_raw":"bar"}
+
+**text_line_ignore**
+
+**text_line_headers**
 
 **ingest**
 
@@ -256,18 +286,13 @@ Required syntax is in **bold**.
   - e.g. price>1,currency=USD
     - Evaluated as price greater than 1 AND currency equals USD.
 
-**text_line_breaker**
 
-- **Syntax:** text_line_breaker="\<regex>"
-- **Description:** When the response returned from the API is a large text object, this parameter can be used to break the text into individual events. A capturing group must be defined, this is where the event will be broken. The capturing group may be empty.
-  - e.g. text_line_breaker="}(){"
-    - This would cause:
-      - {"\_raw":"foo"}{"\_raw":"bar"}
-    - To be returned as two events:
-      - {"\_raw":"foo"}
-      - {"\_raw":"bar"}
+**convert_table_array**
 
-# Overview
+**timeout**
+
+
+# Dataflect Search Query Builder Overview
 
 Dataflect Search ships with a **Query Builder** view that makes it easy for users to interact with the **dfsearch** command. Users can access the **Query Builder** dashboard by navigating to the Dataflect Search Application and selecting **Query Builder**.  The same options are available which are discussed in this documentation for the dfsearch command.
 
@@ -279,9 +304,9 @@ The expanded section includes the underlying query that has been executed. From 
 
 Users have the option to enter parameters within the search query using the format $token$. Tokens must be set when the custom search command is executed using the "parameters".
 
-Update permissions as necessary.
+Update permissions as necessary by navigating to Dataflect Search --> Configure --> Commands
 
-# Overview
+# Dataflect Search Logging Overview
 
 Each of the Dataflect commands are logged to Splunk's \_internal index. These logs can be found by searching:
 
@@ -291,7 +316,7 @@ index=_internal sourcetype=dataflect:log
 
 Dataflect logs the user executing each command, as well as information regarding which APIs they are communicating with, the number of calls they are making, and the volume of data that is being sent out of Splunk (egress) and returned back to Splunk (ingress).
 
-# Monitoring Dashboard
+# Dataflect Search Monitoring Dashboard
 
 To simplify monitoring, Dataflect provides a **Monitoring** Dashboard which provides some key metrics. To access the **Monitoring** Dashboard, navigate to the Dataflect Application, and select **Monitoring** from the navigation menu.
 
