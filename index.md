@@ -374,16 +374,22 @@ The following modifiers can be used with any Dataflect custom search command:
 - Enter current UTC timestamp:
   - insert $STRF:<strf time format>:STRF$
     - <https://strftime.org/>
-  - | dfsearch url=<https://example.dataflect.com> credential=dataflect_example headers="{'User-Agent': 'dataflect-demo', 'Accept': '_/\_', 'x-ms-version': '2020-04-08', 'x-ms-date': '$STRF:%a, %d %b %Y %H:%M:%S GMT:STRF$', 'accept-encoding': 'gzip, deflate'}"
+    ```
+    | dfsearch url=<https://example.dataflect.com> credential=dataflect_example headers="{'User-Agent': 'dataflect-demo', 'Accept': '_/\_', 'x-ms-version': '2020-04-08', 'x-ms-date': '$STRF:%a, %d %b %Y %H:%M:%S GMT:STRF$', 'accept-encoding': 'gzip, deflate'}"
+    ```
 
 # Dataflect Search Known Issues
 [Go to Top](#)
 
 - When executing a dfsearch command, you cannot pass the results directly into the "anomalydetection" or "outlier" commands. You must first pass the results through the "stats" command. Example:
   - This will not work:
-    - | dfsearch url="<https://api.coincap.io/v2/assets">
+      ```
+      | dfsearch url="<https://api.coincap.io/v2/assets">
       | anomalydetection changePercent24Hr
+      ```
   - This will work:
-    - | dfsearch url="<https://api.coincap.io/v2/assets"> 
+      ```
+      | dfsearch url="<https://api.coincap.io/v2/assets"> 
       | stats count by symbol changePercent24Hr  
       | anomalydetection changePercent24Hr
+      ```
