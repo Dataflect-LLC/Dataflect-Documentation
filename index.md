@@ -21,7 +21,10 @@ For additional information, visit [dataflect.com](https://dataflect.com).
    3. [Required Arguments](#required-arguments)
    4. [Optional Arguments](#optional-arguments)
 10. [Dataflect Search Query Builder Overview](#dataflect-search-query-builder-overview)
-    1. [Using the Query Builder to Create a Custom Search Command](#using-the-query-builder-to-create-a-custom-search-command)
+   1. [Using the Query Builder to Create a Custom Search Command](#using-the-query-builder-to-create-a-custom-search-command)
+11. [Normalizing Dataflect Search Results with Props](#normalizing-dataflect-search-results-with-props)
+   1. [Field Aliases](#field-aliases)
+   2. [Field Extractions](#field-extractions)
 11. [Dataflect Search Logging Overview](#dataflect-search-logging-overview)
 12. [Dataflect Search Monitoring Dashboard](#dataflect-search-monitoring-dashboard)
 13. [Dataflect Search Modifiers](#dataflect-search-modifiers)
@@ -373,6 +376,8 @@ Update permissions as necessary by navigating to Dataflect Search --> Configure 
 Dataflect Search results can be normalized using the default Splunk props.conf configurations, with some key caveats.
 
 ## Field Aliases
+[Go to Top](#)
+
 To create a field alias, you will navigate in Splunk Web to Settings --> Fields --> Field aliases.
 
 - Select "New Field Alias"
@@ -382,7 +387,9 @@ To create a field alias, you will navigate in Splunk Web to Settings --> Fields 
 - For "Field aliases" the field on the left will be the name of the field as originally returned from the API. The field on the right will be the new field name you want to use.
 - **NOTE:** The "Overwrite field values" has no impact, the original field name will always be overwritten.
 
-  ## Field Extractions
+## Field Extractions
+[Go to Top](#)
+
 To create a field extraction, you will navigate in Splunk Web to Settings --> Fields --> Field extractions.
 
 - Select "New Field Extraction"
