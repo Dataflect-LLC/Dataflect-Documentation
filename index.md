@@ -170,7 +170,7 @@ The above example demonstrates basic usage of the dfsearch command, without any 
 
 Required syntax is in **bold**.
 
-**| dfsearch**  
+**\| dfsearch**  
 **[url=\<string>]**  
 [endpoint=\<string>]  
 [parameters=\<string>]  
@@ -179,22 +179,22 @@ Required syntax is in **bold**.
 [timestamp_field=\<string>]  
 [timestmp_strf=\<string>]  
 [limit=\<int>]  
-[data=\<string>]
-[data_format=\<string>]
+[data=\<string>]  
+[data_format=\<string>]  
 [headers=\<string>]  
 [verify=\<bool>]  
 [rate_limit_calls=\<int>]  
 [rate_limit_period=\<int>]  
-[offset_field=\<string>]
-[text_line_breaker=\<string>]
-[text_line_ignore=\<string>]
-[text_line_headers=\<string>]
+[offset_field=\<string>]  
+[text_line_breaker=\<string>]  
+[text_line_ignore=\<string>]  
+[text_line_headers=\<string>]  
 [ingest=\<bool>]  
 [ingest_index=\<string>]  
 [ingest_sourcetype=\<string>]  
 [include_fields=\<string>]  
 [search_filter=\<string>]  
-[convert_table_array=\<bool>]
+[convert_table_array=\<bool>]  
 [timeout=\<int>]
 
 ## Required arguments
