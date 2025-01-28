@@ -25,10 +25,10 @@ For additional information, visit [dataflect.com](https://dataflect.com).
 11. [Normalizing Dataflect Search Results with Props](#normalizing-dataflect-search-results-with-props)
    1. [Field Aliases](#field-aliases)
    2. [Field Extractions](#field-extractions)
-11. [Dataflect Search Logging Overview](#dataflect-search-logging-overview)
-12. [Dataflect Search Monitoring Dashboard](#dataflect-search-monitoring-dashboard)
-13. [Dataflect Search Modifiers](#dataflect-search-modifiers)
-14. [Dataflect Search Known Issues](#dataflect-search-known-issues)
+12. [Dataflect Search Logging Overview](#dataflect-search-logging-overview)
+13. [Dataflect Search Monitoring Dashboard](#dataflect-search-monitoring-dashboard)
+14. [Dataflect Search Modifiers](#dataflect-search-modifiers)
+15. [Dataflect Search Known Issues](#dataflect-search-known-issues)
 
 # About Dataflect Search
 [Go to Top](#)
