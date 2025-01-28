@@ -193,7 +193,6 @@ Required syntax is in **bold**.
 [ingest_index=\<string>]  
 [ingest_sourcetype=\<string>]  
 [include_fields=\<string>]  
-[search_filter=\<string>]  
 [convert_table_array=\<bool>]  
 [timeout=\<int>]
 
@@ -266,7 +265,10 @@ Required syntax is in **bold**.
  
 **data_format**
 
-Enter
+- **Syntax:** data_format="\<string>"
+- **Description:** The data_format parameter specifies the format in which the request payload is sent to the server, such as JSON, raw bytes, or serialized data. This determines how the data is encoded and structured, ensuring that the server correctly interprets and processes the information. Common formats include JSON for structured and hierarchical data, raw for binary or custom data types, and serialized formats like Pickle or Protocol Buffers for transmitting complex objects. Selecting the appropriate data_format is crucial for compatibility and effective communication with the target API or web service, as it aligns the client’s data presentation with the server’s expected input.
+- **Accepted Values:** json, raw, serialized
+- **Default:** json
 
 **headers**
 
@@ -308,8 +310,17 @@ Enter
       - {"\_raw":"bar"}
 
 **text_line_ignore**
+- **Syntax:** text_line_ignore="\<string>"
+- **Description:** Only honored when parsing raw text response and a value is defined for text_line_breaker. Will ignore any lines that begin with the defined string. Does not accept regex patterns.
+   - e.g. text_line_breaker="#"
+      - will ignore: #This is a header row
 
 **text_line_headers**
+- **Syntax:** text_line_headers="\<string>"
+- **Description:** Only honored when parsing raw text response and a value is defined for text_line_breaker. When your data is a comma separated list without headers, you can define the headers here.
+   - e.g. if your raw event is:
+     - 8.8.8.8,dns.google.com
+   - you can set text_line_headers="ip,fqdn", and your events will extract ip="8.8.8.8" and fqdn="dns.google.com"
 
 **ingest**
 
@@ -332,18 +343,15 @@ Enter
 - **Description:** A comma separated list of field names to include in the events returned from your API call. **NOTE**: This filtering occurs after normalization from the **props** setting. This means that if you change a field name with **props** you should specify the new name in this list.
   - e.g.  include_fields=""
 
-**search_filter**
-
-- **Syntax:** search_filter="\<string>"
-- **Description:** Provides the ability to filter out results from the API response before returning them as events. Accepts a comma separated list of criteria with the following comparisons: =, >, >=, \<, \<=. Filters are combined using AND logic. **NOTE**: This filtering occurs after normalization from the **props** setting. This means that if you change a field name with **props** you should specify the new name in this list.
-  - e.g. price>1,currency=USD
-    - Evaluated as price greater than 1 AND currency equals USD.
-
-
 **convert_table_array**
+- **Syntax:** convert_table_array="\<bool>"
+- **Description:** If your API call returns a table array this will convert the table array to  JSON object to be handled and parsed by Splunk.
+- **Accepted Values:** true, false
 
 **timeout**
-
+- **Syntax:** timeout="\<int>"
+- **Description:** The amount of time to wait for a response from the API endpoint.
+- **Default Value:** 60
 
 # Dataflect Search Query Builder Overview
 [Go to Top](#)
