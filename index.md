@@ -369,6 +369,33 @@ Users have the option to enter parameters within the search query using the form
 
 Update permissions as necessary by navigating to Dataflect Search --> Configure --> Commands
 
+# Normalizing Dataflect Search Results with Props
+Dataflect Search results can be normalized using the default Splunk props.conf configurations, with some key caveats.
+
+## Field Aliases
+To create a field alias, you will navigate in Splunk Web to Settings --> Fields --> Field aliases.
+
+- Select "New Field Alias"
+- For "Name": dfprops:\<insert the applicable fqdn>  
+   - e.g. dfprops:api.coincap.io
+- For "Apply To" select sourcetype, and use the same value that you used for "Name"
+- For "Field aliases" the field on the left will be the name of the field as originally returned from the API. The field on the right will be the new field name you want to use.
+- **NOTE:** The "Overwrite field values" has no impact, the original field name will always be overwritten.
+
+  ## Field Extractions
+To create a field extraction, you will navigate in Splunk Web to Settings --> Fields --> Field extractions.
+
+- Select "New Field Extraction"
+- For "Name": Select the original field name from the API response that you will be extracting the new fields from.
+- For "Apply To" select sourcetype, and use dfprops:\<insert the applicable fqdn>  
+   - e.g. dfprops:api.coincap.io
+- For "Type" select Inline
+- For "Extraction/Transform" enter a regex expression with at least one named capturing group.
+   - e.g.
+      - name: supply
+      - Extraction/Transform: ^(?<supply_rounded>\d+)\.(?<supply_decimal>\d+)
+      - The fields "supply_rounded" and "supply_decimal" will be extracted from the "supply" field if the regex pattern finds a match.
+
 # Dataflect Search Logging Overview
 [Go to Top](#)
 
