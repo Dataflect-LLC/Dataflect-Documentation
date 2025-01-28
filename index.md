@@ -32,7 +32,7 @@ For additional information, visit [dataflect.com](https://dataflect.com).
 
 Dataflect Search is available as a free Splunk application that allows users to easily integrate with third-party APIs directly from the Splunk ecosystem. The free license currently allows for 150 searches per month. If you would like to purchase additional license you can do so by contacting [sales@dataflect.com](mailto:sales@dataflect.com).
 
-There are additional capabilities available with a premium version of Dataflect that allows for no-code enrichment of your logs in Splunk, and no-code splunk alert alert actions that interact with 3rd party APIs. If you are interested in a demo of these capabilities contact [sales@dataflect.com][mailto:sales@dataflect.com].
+There are additional capabilities available with a premium version of Dataflect that allows for no-code enrichment of your logs in Splunk, and no-code splunk alert alert actions that interact with 3rd party APIs. If you are interested in a demo of these capabilities contact [sales@dataflect.com](mailto:sales@dataflect.com).
 
 Dataflect Search provides the following high level capabilities:
 
@@ -44,7 +44,7 @@ Dataflect Search provides the following high level capabilities:
 [Go to Top](#)
 
 To obtain your free Dataflect Search license contact us directly at [sales@dataflect.com](mailto:sales@dataflect.com).
-The free Dataflect Search license is limited to 150 searches 
+The free Dataflect Search license is limited to 150 searches per month. If you need additional capacity reach out to [sales@dataflect.com](mailto:sales@dataflect.com) for a paid license.
 
 # Dataflect Search Support
 [Go to Top](#)
@@ -68,7 +68,7 @@ You may not modify, distribute, sublicense, or sell this program or derivative w
 # Installation
 [Go to Top](#)
 
-Dataflect Search can be installed in Splunk Cloud environments and should be installed directly from Splunkbase via self-service install or with the help of Splunk Support.
+Dataflect Search can be installed in Splunk Cloud environments and should be installed directly from Splunkbase via self-service install or with the help of Splunk Support. Dataflect Search with a free license is not supported in Splunk Enterprise (on-premise) environments.
 
 ***
 
@@ -124,10 +124,17 @@ The Allowed Domains list allows an administrator to provide granular permissions
   - **NOTE**: Permissions apply to the FQDN only, not any sub-domains.
 - When this is set to true, requests made to FQDNs not in list will fail to execute. When this is set to false users can make requests to any FQDN.
 
+## Configure License
+[Go to Top](#)
+
+Once you have obtained your license from Dataflect, you must enter your license key in the Dataflect Settings page by clicking "Edit" next to License Key and entering your base64 encodced license. Your text should include the header and footer (-----BEGIN LICENSE FILE----- and ----- END LICENSE FILE-----). If you experience any issues contact [support@dataflect.com](mailto:support@dataflect.com).
+
+Your license can only be used on one Splunk Cloud instance.
+
 # Configuring Dataflect Credentials
 [Go to Top](#)
 
-On the _Credentials_ page (Configure --> Credentials) an administrator can create API credentials that can be used to authenticate Datflect search commands. When creating credentials you may choose from the following supported types:
+On the _Credentials_ page (Configure --> Credentials) an administrator can create API credentials that can be used to authenticate Datflect Search commands. When creating credentials you may choose from the following supported types:
 
 - **API Key (simple)**: A simple text based field that you can use to store an API Key. The value of this credential type must be a string.
 - **API Key (headers)**: For more complex use cases, or when additional fields need to be provided (e.g. Credential ID, Credential Value). The value of a credential of this type must be a valid JSON object.
@@ -136,10 +143,12 @@ On the _Credentials_ page (Configure --> Credentials) an administrator can creat
 
 Credentials are stored securely using Splunk's native Secrets Storage.
 
+Additional forms of authentication can be configured with a paid Dataflect Search license, contact [sales@dataflect.com](mailto:sales@dataflect.com) for additional information.
+
 # Using Dataflect Search
 [Go to Top](#)
 
-Dataflect Search's core functionality is made accessible primarily via a custom search command that ship with the Application.
+Dataflect Search's core functionality is made accessible primarily via a custom search command that ship with the application.
 
 - **dfsearch**: Flexibly query any API
 
