@@ -12,8 +12,7 @@ For additional information, visit [dataflect.com](https://dataflect.com).
 6. [Dataflect Search Roles](#dataflect-search-roles)
    1. [Adding Users to Dataflect Roles](#adding-users-to-dataflect-roles)
 7. [Configuring Dataflect Settings](#configuring-dataflect-settings)
-   1. [Enforce Verification?](#enforce-verification)
-   2. [Enforce Allowed Domains?](#enforce-allowed-domains)
+   1. [Enforce Allowed Domains?](#enforce-allowed-domains)
 8. [Configuring Dataflect Credentials](#configuring-dataflect-credentials)
 9. [Using Dataflect Search](#using-dataflect-search)
    1. [Basic Examples](#basic-examples)
@@ -107,17 +106,6 @@ After installation, you must assign at least one user to the _dfadmin_ role. You
 
 Once a user has been added to the _dfadmin_ role, they will have visibility into the _Settings_ page (Configure --> Settings) within the Dataflect application. The settings that can be configured are:
 
-## Enforce verification?
-[Go to Top](#)
-
-- Default Behavior: By default, verify is set to True unless configured otherwise in a search (e.g. \| dfsearch url=api.dataflect.com/api/v2/endpoint verify=false). This means that when you make an HTTPS request, requests will automatically verify the server’s SSL certificate against a set of trusted Certificate Authorities (CAs).
-- What Verification Entails:
-   - Certificate Validation: Ensures that the server’s SSL certificate is valid, not expired, and has been issued by a trusted CA.
-   - Hostname Matching: Confirms that the certificate’s hostname matches the server’s hostname you’re trying to reach.
-   - Chain of Trust: Verifies the chain of trust from the server’s certificate up to a root CA.
-- Security Importance: Enabling verification (verify=True) helps prevent man-in-the-middle (MITM) attacks by ensuring that you’re communicating with the legitimate server and that the connection is secure.
-- When this is set to true, users will be unable to override the default setting of True.
-
 ## Enforce allowed domains?
 [Go to Top](#)
 
@@ -185,7 +173,6 @@ Required syntax is in **bold**.
 [data=\<string>]  
 [data_format=\<string>]  
 [headers=\<string>]  
-[verify=\<bool>]  
 [rate_limit_calls=\<int>]  
 [rate_limit_period=\<int>]  
 [offset_field=\<string>]  
@@ -205,7 +192,7 @@ Required syntax is in **bold**.
 **url**
 
 - **Syntax:** url="_\<url>_"
-- **Description:** The URL for the API that you are reaching out to. Supports HTTP and HTTPS. If no protocol is specified this will default to HTTPS. You can include the full URL path here, or leverage the **url** and **endpoint** parameters together to specify the full path. 
+- **Description:** The URL for the API that you are reaching out to. Supports only HTTPS. If no protocol is specified this will default to HTTPS. You can include the full URL path here, or leverage the **url** and **endpoint** parameters together to specify the full path. **Note**: Dataflect forces SSL certificate verification for all requests.
   - Examples:
     - <https://api.dataflect.com/v2/api>
     - api.dataflect.com/v2/api
@@ -278,11 +265,6 @@ Required syntax is in **bold**.
 - **Syntax:** headers="\<string>"
 - **Description:** The "Header" of the request sent to the API. This must be a JSON-like object, using single quotes in place of double quotes.
   - e.g. headers="{'foo': 'bar'}"
-
-**verify**
-
-- **Syntax:** verify="\<boolean>"
-- **Description:** Whether or not to verify the server certificate with the request. **NOTE:** If Dataflect settings have set "Force HTTPS Verify" to true this setting will be ignored.
 
 **rate_limit_calls**
 
