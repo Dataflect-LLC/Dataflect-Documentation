@@ -135,6 +135,8 @@ Dataflect Search's core functionality is made accessible primarily via a custom 
 
 - **dfsearch**: Flexibly query any API
 
+**NOTE: the dfsearch command can only be run from the Dataflect Search app. If you want to extend the capability outside of the app you must create custom search commands using the [Query Builder Dashboard](#using-the-query-builder-to-create-a-custom-search-command), and then set the sharing to Global in the Configure --> Commands Page.
+
 ## Basic Examples
 [Go to Top](#)
 
