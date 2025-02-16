@@ -79,32 +79,24 @@ Dataflect Search can be installed in Splunk Cloud environments and should be ins
 
 Dataflect Search uses the standard access control system integrated with the Splunk platform. Dataflect allows for strict Role Based Access Control by restricting functionality and interaction with third party APIs on a per domain basis. 
 
-In order to facilitate this, Dataflect adds three roles to any pre-existing roles within your Splunk deployment:
+In order to facilitate this, Dataflect leverages the following existing splunk roles:
 
 | Role    |                                                                                                                                                   Description                                                                                                                                                  |
 | :------ | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
-| dfadmin | Installs and configures the Dataflect app within your Splunk deployment. Users must be assigned this role in order to manage Dataflect settings, configure allowed domains, and manage custom commands created with Dataflect Search. Users with this role will have visibility into the Monitoring dashboard. |
-| dfpower | Is able to create custom dataflect search commands and is able to view the Monitoring dashboard (user will also require visibility into the _internal index for this dashboard to function properly) |
-| dfuser  | Can execute the dfsearch command. |
+| admin/sc_admin | Installs and configures the Dataflect app within your Splunk deployment. Users must be assigned this role in order to manage Dataflect settings, configure allowed domains, and manage custom commands created with Dataflect Search. Users with this role will have visibility into the Monitoring dashboard. Can execute the dfsearch command. |
+| power  | Can execute the dfsearch command. |
 
 ***
 
 ## Adding users to Dataflect roles
 [Go to Top](#)
 
-After installation, you must assign at least one user to the _dfadmin_ role. You may assign as many additional users as applicable to the other roles listed above. In order to accomplish this:
-
-1. From the system bar, click **Settings** > **Users**
-2. Search for the user you wish to modify
-3. Next to the desired user, in the **Actions** column, select the dropdown and pick **Edit**
-4. In the pop-up, find the appropriate role next to **Assign roles** under the **Availablle item(s)** column (e.g. dfadmin)
-   1. Click the desired role to add it to **Selected item(s)**
-5. Click **Save**
+After installation Dataflect must be configured by a Splunk user with the admin or sc_admin role.
 
 # Configuring Dataflect Settings
 [Go to Top](#)
 
-Once a user has been added to the _dfadmin_ role, they will have visibility into the _Settings_ page (Configure --> Settings) within the Dataflect application. The settings that can be configured are:
+Users with admin or sc_admin roles will have visibility into the _Settings_ page (Configure --> Settings) within the Dataflect application. The settings that can be configured are:
 
 ## Enforce allowed domains?
 [Go to Top](#)
