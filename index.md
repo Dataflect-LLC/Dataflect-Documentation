@@ -1,4 +1,4 @@
-This documentation is for Dataflect Search version 2.0.1. For older versions of Dataflect Search documentation contact us at [support@dataflect.com](mailto:support@dataflect.com).
+This documentation is for Dataflect Search version 2.0.6. For older versions of Dataflect Search documentation contact us at [support@dataflect.com](mailto:support@dataflect.com).
 
 For additional information, visit [dataflect.com](https://dataflect.com).
 
@@ -384,7 +384,7 @@ To create a field extraction, you will navigate in Splunk Web to Settings --> Fi
 
 Each of the Dataflect commands are logged to Splunk's \_internal index. These logs can be found by searching:
 
-```index=_internal sourcetype=dataflect:log```
+```index=_internal source=*dataflect.log```
 
 Dataflect logs the user executing each command, as well as information regarding which APIs they are communicating with, the number of calls they are making, and the volume of data that is being sent out of Splunk (egress) and returned back to Splunk (ingress).
 
