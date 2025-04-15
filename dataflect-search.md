@@ -1,4 +1,6 @@
-This documentation is for Dataflect Search version 2.0.6. For older versions of Dataflect Search documentation contact us at [support@dataflect.com](mailto:support@dataflect.com).
+[Go back](index)
+
+This documentation is for Dataflect Search version 2.0.8. For older versions of Dataflect Search documentation contact us at [support@dataflect.com](mailto:support@dataflect.com).
 
 For additional information, visit [dataflect.com](https://dataflect.com).
 
