@@ -206,7 +206,7 @@ Required syntax is in **bold**.
 - **Syntax:** parameters="\<string>"
 - **Description:**The parameters to pass with the API call. Use the name of the variable and the corresponding value, separated by an =. If multiple parameters apply, separate with "&".
   - Examples:
-    - foo=bar&something=this is a string&id=23
+    - parameters="foo=bar&something=this is a string&id=23"
   - There is no need to URL Escape the parameters, this is handled by Dataflect.
 
 **credential**
@@ -335,7 +335,7 @@ Required syntax is in **bold**.
 
 - **dfenrich**: Enrich your logs with information obtained from any API, acts as a no-code custom scripted lookup.
 
-**NOTE: the dfenrich command can only be run from the Dataflect app. If you want to extend the capability outside of the app you must create custom search commands using the [Query Builder Dashboard](#using-the-query-builder-to-create-a-custom-search-command), and then set the sharing to Global in the Configure --> Commands Page.
+**NOTE: the dfenrich command can only be run from the Dataflect app.
 
 ## Basic Examples
 [Go to Top](#)
@@ -397,7 +397,7 @@ Required syntax is in **bold**.
 - **Syntax:** parameters="\<string>"
 - **Description:**The parameters to pass with the API call. Use the name of the variable and the corresponding value, separated by an =. If multiple parameters apply, separate with "&".
   - Examples:
-    - foo=bar&something=this is a string&id=23
+    - parameters="foo=bar&something=this is a string&id=23"
   - There is no need to URL Escape the parameters, this is handled by Dataflect.
 
 **credential**
@@ -417,6 +417,123 @@ Required syntax is in **bold**.
 - **Default:** Defaults to "data". You can override this by setting containing_field="none".
 
 **output_fields**
+
+- **Syntax:** containing_field="\<string>"
+- **Description:** A comma separated list of field names to include in the events returned from your API call.
+  - e.g.  include_fields="foo,bar"
+
+**data**
+
+- **Syntax:** data="\<string>"
+- **Description:** The "Body" of the request sent to the API. This must be a JSON-like object, using single quotes in place of double quotes.
+  - e.g. data="{'foo': 'bar'}"
+ 
+**data_format**
+
+- **Syntax:** data_format="\<string>"
+- **Description:** The data_format parameter specifies the format in which the request payload is sent to the server, such as JSON, raw bytes, or serialized data. This determines how the data is encoded and structured, ensuring that the server correctly interprets and processes the information. Common formats include JSON for structured and hierarchical data, raw for binary or custom data types, and serialized formats like Pickle or Protocol Buffers for transmitting complex objects. Selecting the appropriate data_format is crucial for compatibility and effective communication with the target API or web service, as it aligns the client’s data presentation with the server’s expected input.
+- **Accepted Values:** json, raw, serialized
+- **Default:** json
+
+**headers**
+
+- **Syntax:** headers="\<string>"
+- **Description:** The "Header" of the request sent to the API. This must be a JSON-like object, using single quotes in place of double quotes.
+  - e.g. headers="{'foo': 'bar'}"
+
+**method**
+
+- **Syntax:** method="\<string>"
+- **Description:** The "method" of the request sent to the API. Accepts "get" or "post".
+  - e.g. method=post
+- **Default:** get
+
+**rate_limit_calls**
+
+- **Syntax:** rate_limit_calls="\<int>"
+- **Description:** Used in conjunction with **rate_limit_period**. If your API response requires pagination, you can implement rate limiting for subsequent calls required to return the full data set. The number set here will dictate the number of calls that can be made within the **rate_limit_period**.
+
+**rate_limit_period**
+
+- **Syntax:** rate_limit_period="\<int>"
+- **Description:** Used in conjunction with **rate_limit_calls**. If your API response requires pagination, you can implement rate limiting for subsequent calls required to return the full data set. The number set here will dictate the number of seconds within which the **rate_limit_period** number of calls can be made.
+  - e.g. rate_limit_calls=15 rate_limit_period=60
+    - 15 calls per 60 seconds, after this limit is reached Dataflect will wait to make subsequent calls.
+
+- **dfengage**: Engage with any API. Implement automations and integrations directly from a Splunk search, can be deployed as no-code custom alert actions.
+
+**NOTE: the dfengage command can only be run from the Dataflect app. If you want to extend the capability outside of the app you must create custom alert action using the [Action Builder Dashboard](#using-the-action-builder-to-create-a-custom-alert-action), and then set the sharing to Global in the Configure --> Commands Page.
+
+## Basic Examples
+[Go to Top](#)
+
+```
+| dfengage url="https://somerandomsite.notadomain/api/v2/user?username=foo&acition=disable"
+```
+
+The above example demonstrates basic usage of the dfengage command, without any additional parameters specified. The dfengage command must be the first command in a search string.
+
+## Syntax
+[Go to Top](#)
+
+**Simple:**
+
+| dfengage url="\<_url_>"
+
+**Complete:**
+
+Required syntax is in **bold**.
+
+**\| dfenrich**  
+**[url=\<string>]**  
+[endpoint=\<string>]  
+[parameters=\<string>]  
+[credential=\<string>]  
+[containing_field=\<string>]  
+[data=\<string>]
+[data_format=\<string>]
+[headers=\<string>]
+[method=\<string>]
+
+## Required arguments
+[Go to Top](#)
+
+**url**
+
+- **Syntax:** url="_\<url>_"
+- **Description:** The URL for the API that you are reaching out to. Supports only HTTPS. If no protocol is specified this will default to HTTPS. You can include the full URL path here, or leverage the **url** and **endpoint** parameters together to specify the full path. **Note**: Dataflect forces SSL certificate verification for all requests.
+  - Examples:
+    - <https://api.dataflect.com/v2/api>
+    - api.dataflect.com/v2/api
+    - api.dataflect.com
+
+## Optional arguments
+[Go to Top](#)
+
+**endpoint**
+
+- **Syntax:** endpoint="\<string>"
+- **Description:** The API endpoint being targeted, will be appended to the **url** field. Can begin with or without a "/"
+
+**parameters**
+
+- **Syntax:** parameters="\<string>"
+- **Description:**The parameters to pass with the API call. Use the name of the variable and the corresponding value, separated by an =. If multiple parameters apply, separate with "&".
+  - Examples:
+    - parameters="foo=bar&something=this is a string&id=23"
+  - There is no need to URL Escape the parameters, this is handled by Dataflect.
+
+**credential**
+
+- **Syntax:** credential="\<string>"
+- **Description:** The name of the credential to be used for interacting with the API. Behavior depends on the "Type" of credential this is associated with:
+  - **api_key_headers**: The headers set in the credential are automatically added to your request, no action needed.
+  - **api_key_simple:** Wherever the key needs to be entered, place "\<\<>>". This can be in either the **parameters** or the **headers**.
+    - e.g. parameters="key=\<\<>>"
+    - e.g. headers="{'API-KEY': \<\<>>}"
+  - **basic:**: The user/pass are automatically passed with your request, no action needed.
+
+**containing_field**
 
 - **Syntax:** containing_field="\<string>"
 - **Description:** The field within the API response that contains the information your are interested in viewing. For example, if your API response returns {"events": [{"foo": "bar", "id": "1"},{"foo": "baz", "id": "2"]}, you can specify the **containing_field**=events to return the containing events.
@@ -441,25 +558,12 @@ Required syntax is in **bold**.
 - **Description:** The "Header" of the request sent to the API. This must be a JSON-like object, using single quotes in place of double quotes.
   - e.g. headers="{'foo': 'bar'}"
 
-**rate_limit_calls**
-
-- **Syntax:** rate_limit_calls="\<int>"
-- **Description:** Used in conjunction with **rate_limit_period**. If your API response requires pagination, you can implement rate limiting for subsequent calls required to return the full data set. The number set here will dictate the number of calls that can be made within the **rate_limit_period**.
-
-**rate_limit_period**
-
-- **Syntax:** rate_limit_period="\<int>"
-- **Description:** Used in conjunction with **rate_limit_calls**. If your API response requires pagination, you can implement rate limiting for subsequent calls required to return the full data set. The number set here will dictate the number of seconds within which the **rate_limit_period** number of calls can be made.
-  - e.g. rate_limit_calls=15 rate_limit_period=60
-    - 15 calls per 60 seconds, after this limit is reached Dataflect will wait to make subsequent calls.
-
 **method**
 
 - **Syntax:** method="\<string>"
-- **Description:** The "method" of the request sent to the API. Accepts "get" or "post".
+- **Description:** The "method" of the request sent to the API. Accepts "put", "patch", "post", "delete".
   - e.g. method=post
-- **Default:** get
-
+- **Default:** post
 
 # Dataflect Query Builder Overview
 [Go to Top](#)
@@ -477,8 +581,24 @@ Users have the option to enter parameters within the search query using the form
 
 Update permissions as necessary by navigating to Dataflect --> Configure --> Commands
 
+# Dataflect Action Builder Overview
+[Go to Top](#)
+
+Dataflect ships with a **Query Builder** view that makes it easy for users to interact with the **dfsearch** command. Users can access the **Query Builder** dashboard by navigating to the Dataflect Application and selecting **Query Builder**.  The same options are available which are discussed in this documentation for the dfsearch command.
+
+## Using the Action Builder to Create a Custom Alert Action
+[Go to Top](#)
+
+Once a user has executed a search using the **Action Builder**, the option to "Create Custom Alert Action" appears at the top of the page. Click the link to expand this option.
+
+The expanded section includes the underlying query that has been executed. From here a user can enter an "Custom Alert Action Name" in the text box under the search and click "Create" to create a custom alert action that will execute the underlying search.
+
+Users have the option to enter parameters within the search query using the format $result.somefield$. Tokens will be passed in from the results passed into the alert action.
+
+Update permissions as necessary by navigating to Dataflect --> Configure --> Actions.
+
 # Normalizing Dataflect Results with Props
-Dataflect results can be normalized using the default Splunk props.conf configurations, with some key caveats.
+Dataflect dfsearch results can be normalized using the default Splunk props.conf configurations, with some key caveats.
 
 ## Field Aliases
 [Go to Top](#)
