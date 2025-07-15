@@ -625,7 +625,7 @@ To create a field extraction, you will navigate in Splunk Web to Settings --> Fi
 - For "Extraction/Transform" enter a regex expression with at least one named capturing group.
    - e.g.
       - name: supply
-      - Extraction/Transform: ^(?<supply_rounded>\d+)\.(?<supply_decimal>\d+)
+      - Extraction/Transform: ```^(?<supply_rounded>\d+)\.(?<supply_decimal>\d+)```
       - The fields "supply_rounded" and "supply_decimal" will be extracted from the "supply" field if the regex pattern finds a match.
 
 # Dataflect Logging Overview
