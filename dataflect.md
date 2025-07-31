@@ -1,6 +1,6 @@
 [Go back](index)
 
-This documentation is for Dataflect version 2.0.2. For older versions of Dataflect documentation contact us at [support@dataflect.com](mailto:support@dataflect.com).
+This documentation is for Dataflect version 2.0.3. For older versions of Dataflect documentation contact us at [support@dataflect.com](mailto:support@dataflect.com).
 
 For additional information, visit [dataflect.com](https://dataflect.com).
 
