@@ -1,6 +1,6 @@
 [Go back](index)
 
-This documentation is for Dataflect version 2.0.3. For older versions of Dataflect documentation contact us at [support@dataflect.com](mailto:support@dataflect.com).
+This documentation is for Dataflect version 2.0.4. For older versions of Dataflect documentation contact us at [support@dataflect.com](mailto:support@dataflect.com).
 
 For additional information, visit [dataflect.com](https://dataflect.com).
 
@@ -484,7 +484,7 @@ The above example demonstrates basic usage of the dfengage command, without any 
 
 Required syntax is in **bold**.
 
-**\| dfenrich**  
+**\| dfengage**  
 **[url=\<string>]**  
 [endpoint=\<string>]  
 [parameters=\<string>]  
@@ -584,7 +584,7 @@ Update permissions as necessary by navigating to Dataflect --> Configure --> Com
 # Dataflect Action Builder Overview
 [Go to Top](#)
 
-Dataflect ships with a **Query Builder** view that makes it easy for users to interact with the **dfsearch** command. Users can access the **Query Builder** dashboard by navigating to the Dataflect Application and selecting **Query Builder**.  The same options are available which are discussed in this documentation for the dfsearch command.
+Dataflect ships with an **Action Builder** view that makes it easy for users to interact with the **dfengage** command. Users can access the **Action Builder** dashboard by navigating to the Dataflect Application and selecting **Action Builder**.  The same options are available which are discussed in this documentation for the dfengage command.
 
 ## Using the Action Builder to Create a Custom Alert Action
 [Go to Top](#)
@@ -655,6 +655,21 @@ The following modifiers can be used with any Dataflect custom search command:
     ```
     | dfsearch url=<https://example.dataflect.com> credential=dataflect_example headers="{'User-Agent': 'dataflect-demo', 'Accept': '_/\_', 'x-ms-version': '2020-04-08', 'x-ms-date': '$STRF:%a, %d %b %Y %H:%M:%S GMT:STRF$', 'accept-encoding': 'gzip, deflate'}"
     ```
+
+- Relative time ($RELTIME):
+  - Insert dynamically calculated timestamps in parameters, headers, or request bodies using the syntax
+    - \$RELTIME:<modifier>:<strftime format>:RELTIME\$.
+    - <modifier> supports offsets like -30d@d, -1h@h, -15m, or pure snaps such as @d, @h, @m.
+    - <strftime format> follows standard strftime tokens; use %s to output epoch seconds.
+
+    - ```Example: headers="{'X-Start': '$RELTIME:-7d@d:%Y-%m-%d:%RELTIME$'}"``` inserts the start of the day seven days ago.
+    - These placeholders are expanded before the request is sent.
+
+- Page range ($PAGES):
+  - Generate sequential page numbers for paginated APIs by placing
+    - \$PAGES:<start>-<end>:PAGES\$ in a field that holds the page value.
+    - Dataflect duplicates the request for each integer between <start> and <end> (inclusive), replacing the token with the current page number in each iteration.
+    - Example: parameters="page=$PAGES:1-5:PAGES$" issues five requests with page=1 through page=5.
 
 # Dataflect Known Issues
 [Go to Top](#)
