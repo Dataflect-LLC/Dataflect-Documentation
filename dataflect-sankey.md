@@ -1,4 +1,10 @@
-# Sankey Flow Visualization — Usage Guide
+[Go back](index)
+
+This documentation is for Sankey Visualization by Dataflect version 1.0.4. For older versions of Dataflect documentation contact us at [support@dataflect.com](mailto:support@dataflect.com).
+
+For additional information, visit [dataflect.com](https://dataflect.com).
+
+# Sankey Visualization by Dataflect — Usage Guide
 
 Render a Sankey diagram from any search that outputs **exactly three columns**:
 - **source** (string)
